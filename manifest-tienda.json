@@ -1,0 +1,26 @@
+{
+  "name": "Zona Marcol",
+  "short_name": "Zona Marcol",
+  "description": "Tienda oficial Zona Marcol Honduras",
+  "start_url": "/Tienda/index",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F48FB1",
+  "theme_color": "#F48FB1",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "Content/Demo/img/icon/icon-tienda-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "Content/Demo/img/icon/icon-tienda-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,565 @@
+/* ============================================================
+   VARIABLES GLOBALES DEL SISTEMA
+   ZonaMarcol — DeskCod
+   Paleta:
+     Amarillo Marcol   #F5A800   (header / acento principal)
+     Amarillo hover    #C58800
+     Sidebar oscuro    #3D3D3D / #2A2A2A
+     Fondo crema       #FFFBF2
+     Texto principal   #1F2329
+   ============================================================ */
+
+:root {
+
+    /* ══════════════════════════════════════════════════════
+       HEADER / NAVBAR SUPERIOR
+       ══════════════════════════════════════════════════════ */
+    --header-bg:              #F5A800;
+    --header-bg-hover:        #C58800;
+    --header-text:            #FFFFFF;
+    --header-text-muted:      rgba(255,255,255,0.75);
+    --header-border:          rgba(0,0,0,0.10);
+    --header-height:          70px;
+    --header-shadow:          0 2px 10px rgba(0,0,0,0.15);
+    --header-btn-bg-hover:    rgba(0,0,0,0.10);
+    --header-btn-border:      rgba(255,255,255,0.35);
+    --header-z-index:         999;
+
+    /* ══════════════════════════════════════════════════════
+       SIDEBAR
+       ══════════════════════════════════════════════════════ */
+    --sidebar-bg-start:       #3D3D3D;
+    --sidebar-bg-end:         #2A2A2A;
+    --sidebar-text:           rgba(255,255,255,0.85);
+    --sidebar-text-active:    #FFFFFF;
+    --sidebar-accent:         #F5A800;
+    --sidebar-active-bg:      rgba(245,168,0,0.18);
+    --sidebar-hover-bg:       rgba(255,255,255,0.07);
+    --sidebar-header-bg:      rgba(0,0,0,0.20);
+    --sidebar-border:         rgba(255,255,255,0.08);
+    --sidebar-width:          280px;
+    --sidebar-width-collapsed: 70px;
+    --sidebar-shadow:         2px 0 10px rgba(0,0,0,0.20);
+    --sidebar-z-index:        1000;
+    --sidebar-submenu-pl:     2.5rem;
+    --sidebar-font-size-sub:  0.9rem;
+
+    /* ══════════════════════════════════════════════════════
+       BODY / FONDO PRINCIPAL
+       ══════════════════════════════════════════════════════ */
+    --body-bg:                #FFFBF2;
+    --body-text:              #1F2329;
+    --body-text-muted:        #6B7280;
+    --body-text-inverse:      #FFFFFF;
+    --main-content-pt:        80px;
+
+    /* ══════════════════════════════════════════════════════
+       CARDS
+       ══════════════════════════════════════════════════════ */
+    --card-bg:                #FFFFFF;
+    --card-border:            rgba(245,168,0,0.15);
+    --card-border-radius:     12px;
+    --card-shadow:            0 2px 8px rgba(0,0,0,0.07);
+    --card-shadow-hover:      0 8px 25px rgba(245,168,0,0.18);
+    --card-header-bg:         #FFF6E0;
+    --card-header-text:       #1F2329;
+    --card-header-border:     rgba(245,168,0,0.15);
+    --card-footer-bg:         #FFF6E0;
+    --card-footer-text:       #6B7280;
+    --card-footer-border:     rgba(245,168,0,0.15);
+
+    /* ══════════════════════════════════════════════════════
+       TABLAS
+       ══════════════════════════════════════════════════════ */
+    --table-bg:               #FFFFFF;
+    --table-text:             #1F2329;
+    --table-border:           #F0E2BC;
+    --table-thead-bg:         #3D3D3D;
+    --table-thead-text:       #FFFFFF;
+    --table-row-hover-bg:     rgba(245,168,0,0.08);
+    --table-row-stripe-bg:    rgba(245,168,0,0.04);
+    --table-border-radius:    8px;
+
+    /* ══════════════════════════════════════════════════════
+       FORMULARIOS
+       ══════════════════════════════════════════════════════ */
+    --input-bg:               #FFFFFF;
+    --input-text:             #1F2329;
+    --input-placeholder:      #ADB5BD;
+    --input-border:           #CED4DA;
+    --input-border-focus:     #F5A800;
+    --input-shadow-focus:     rgba(245,168,0,0.25);
+    --input-bg-disabled:      #E9ECEF;
+    --input-text-disabled:    #6C757D;
+    --input-border-radius:    8px;
+    --input-group-bg:         #FFF1C8;
+    --input-group-text:       #8C6300;
+    --label-text:             #1F2329;
+
+    /* ══════════════════════════════════════════════════════
+       BOTONES PRIMARIOS
+       ══════════════════════════════════════════════════════ */
+    --btn-primary-bg:         #F5A800;
+    --btn-primary-bg-hover:   #C58800;
+    --btn-primary-text:       #FFFFFF;
+    --btn-primary-border:     #F5A800;
+    --btn-primary-shadow:     rgba(245,168,0,0.35);
+    --btn-border-radius:      8px;
+    --btn-shadow-hover:       0 4px 12px rgba(245,168,0,0.30);
+
+    /* ══════════════════════════════════════════════════════
+       BADGES
+       ══════════════════════════════════════════════════════ */
+    --badge-success-bg:       #28A745;
+    --badge-success-text:     #FFFFFF;
+    --badge-danger-bg:        #DC3545;
+    --badge-danger-text:      #FFFFFF;
+    --badge-warning-bg:       #FFC107;
+    --badge-warning-text:     #212529;
+    --badge-info-bg:          #17A2B8;
+    --badge-info-text:        #FFFFFF;
+    --badge-secondary-bg:     #6C757D;
+    --badge-secondary-text:   #FFFFFF;
+    --badge-border-radius:    6px;
+
+    /* ══════════════════════════════════════════════════════
+       ALERTS
+       ══════════════════════════════════════════════════════ */
+    --alert-success-bg:       #D4EDDA;
+    --alert-success-text:     #155724;
+    --alert-success-border:   #C3E6CB;
+    --alert-danger-bg:        #F8D7DA;
+    --alert-danger-text:      #721C24;
+    --alert-danger-border:    #F5C6CB;
+    --alert-warning-bg:       #FFF3CD;
+    --alert-warning-text:     #856404;
+    --alert-warning-border:   #FFEEBA;
+    --alert-info-bg:          #D1ECF1;
+    --alert-info-text:        #0C5460;
+    --alert-info-border:      #BEE5EB;
+    --alert-border-radius:    8px;
+
+    /* ══════════════════════════════════════════════════════
+       MODALES
+       ══════════════════════════════════════════════════════ */
+    --modal-bg:               #FFFFFF;
+    --modal-text:             #1F2329;
+    --modal-border:           rgba(245,168,0,0.18);
+    --modal-header-bg:        #FFF6E0;
+    --modal-header-text:      #1F2329;
+    --modal-footer-bg:        #FFF6E0;
+    --modal-footer-border:    rgba(245,168,0,0.15);
+    --modal-border-radius:    12px;
+    --modal-shadow:           0 10px 40px rgba(0,0,0,0.20);
+    --modal-backdrop:         rgba(0,0,0,0.50);
+
+    /* ══════════════════════════════════════════════════════
+       DROPDOWN
+       ══════════════════════════════════════════════════════ */
+    --dropdown-bg:            #FFFFFF;
+    --dropdown-text:          #1F2329;
+    --dropdown-border:        rgba(245,168,0,0.18);
+    --dropdown-item-hover-bg: #FFF1C8;
+    --dropdown-item-hover-text: #8C6300;
+    --dropdown-shadow:        0 4px 20px rgba(245,168,0,0.15);
+    --dropdown-border-radius: 8px;
+    --dropdown-item-border-radius: 6px;
+
+    /* ══════════════════════════════════════════════════════
+       PAGINACIÓN
+       ══════════════════════════════════════════════════════ */
+    --pagination-bg:          #FFFFFF;
+    --pagination-text:        #C58800;
+    --pagination-border:      #F0E2BC;
+    --pagination-hover-bg:    #FFF1C8;
+    --pagination-active-bg:   #F5A800;
+    --pagination-active-text: #FFFFFF;
+    --pagination-disabled-bg: #F8F9FA;
+    --pagination-disabled-text: #6C757D;
+
+    /* ══════════════════════════════════════════════════════
+       ACCORDION
+       ══════════════════════════════════════════════════════ */
+    --accordion-bg:           #FFFFFF;
+    --accordion-text:         #1F2329;
+    --accordion-border:       rgba(245,168,0,0.18);
+    --accordion-btn-bg:       #FFF6E0;
+    --accordion-btn-text:     #1F2329;
+    --accordion-btn-active-bg: rgba(245,168,0,0.12);
+    --accordion-btn-active-text: #8C6300;
+    --accordion-body-bg:      #FFFFFF;
+
+    /* ══════════════════════════════════════════════════════
+       FOOTER
+       ══════════════════════════════════════════════════════ */
+    --footer-bg:              #2A2A2A;
+    --footer-text:            #FFFFFF;
+    --footer-text-muted:      rgba(255,255,255,0.65);
+    --footer-link:            #F5A800;
+    --footer-link-hover:      #FFC75A;
+    --footer-border:          rgba(255,255,255,0.08);
+
+    /* ══════════════════════════════════════════════════════
+       SCROLLBAR
+       ══════════════════════════════════════════════════════ */
+    --scrollbar-width:        8px;
+    --scrollbar-track-bg:     #FFF1C8;
+    --scrollbar-thumb-bg:     #F5A800;
+    --scrollbar-thumb-hover:  #C58800;
+    --scrollbar-border-radius: 5px;
+
+    /* ══════════════════════════════════════════════════════
+       TIPOGRAFÍA
+       ══════════════════════════════════════════════════════ */
+    --font-family-base:       'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-size-base:         1rem;
+    --font-size-sm:           0.875rem;
+    --font-size-lg:           1.125rem;
+    --font-size-xl:           1.25rem;
+    --font-weight-normal:     400;
+    --font-weight-medium:     500;
+    --font-weight-semibold:   600;
+    --font-weight-bold:       700;
+    --line-height-base:       1.5;
+
+    /* ══════════════════════════════════════════════════════
+       SOMBRAS GLOBALES
+       ══════════════════════════════════════════════════════ */
+    --shadow-sm:              0 2px 8px rgba(0,0,0,0.08);
+    --shadow-md:              0 4px 16px rgba(0,0,0,0.12);
+    --shadow-lg:              0 8px 32px rgba(0,0,0,0.16);
+    --shadow-xl:              0 16px 48px rgba(0,0,0,0.20);
+
+    /* ══════════════════════════════════════════════════════
+       BORDES GLOBALES
+       ══════════════════════════════════════════════════════ */
+    --border-color:           #F0E2BC;
+    --border-color-light:     rgba(245,168,0,0.12);
+    --border-radius-sm:       4px;
+    --border-radius-md:       8px;
+    --border-radius-lg:       12px;
+    --border-radius-xl:       16px;
+    --border-radius-full:     9999px;
+
+    /* ══════════════════════════════════════════════════════
+       TRANSICIONES
+       ══════════════════════════════════════════════════════ */
+    --transition-speed:       0.3s;
+    --transition-speed-fast:  0.15s;
+    --transition-speed-slow:  0.5s;
+    --transition-ease:        ease;
+
+    /* ══════════════════════════════════════════════════════
+       Z-INDEX
+       ══════════════════════════════════════════════════════ */
+    --z-dropdown:             100;
+    --z-overlay:              999;
+    --z-header:               999;
+    --z-sidebar:              1000;
+    --z-modal:                1050;
+    --z-toast:                1080;
+    --z-tooltip:              1090;
+
+    /* ══════════════════════════════════════════════════════
+       OVERLAY MÓVIL
+       ══════════════════════════════════════════════════════ */
+    --overlay-bg:             rgba(0,0,0,0.50);
+
+    /* ══════════════════════════════════════════════════════
+       GRÁFICAS
+       ══════════════════════════════════════════════════════ */
+    --chart-color-1:          #F5A800;
+    --chart-color-2:          #3D3D3D;
+    --chart-color-3:          #C58800;
+    --chart-color-4:          #17A2B8;
+    --chart-color-5:          #28A745;
+    --chart-color-6:          #6C757D;
+    --chart-grid-color:       rgba(245,168,0,0.10);
+    --chart-tooltip-bg:       #FFFFFF;
+    --chart-tooltip-text:     #1F2329;
+    --chart-tooltip-shadow:   0 4px 16px rgba(245,168,0,0.20);
+
+    /* ══════════════════════════════════════════════════════
+       ESTADOS DE PEDIDOS — badges específicos del sistema
+       ══════════════════════════════════════════════════════ */
+    --badge-pendiente-bg:     #FFF3E0;
+    --badge-pendiente-text:   #E65100;
+    --badge-preparacion-bg:   #FFF6E0;
+    --badge-preparacion-text: #8C6300;
+    --badge-listo-bg:         #E8F5E9;
+    --badge-listo-text:       #1B5E20;
+    --badge-camino-bg:        #E3F2FD;
+    --badge-camino-text:      #0D47A1;
+    --badge-entregado-bg:     #E8F5E9;
+    --badge-entregado-text:   #1B5E20;
+    --badge-cancelado-bg:     #FCE4EC;
+    --badge-cancelado-text:   #880E4F;
+
+    /* ══════════════════════════════════════════════════════
+       ESTADOS DE SERVICIO TÉCNICO (mantenimiento)
+       ══════════════════════════════════════════════════════ */
+    --badge-os-recibido-bg:        #E3F2FD;
+    --badge-os-recibido-text:      #0D47A1;
+    --badge-os-diagnostico-bg:     #FFF3E0;
+    --badge-os-diagnostico-text:   #E65100;
+    --badge-os-aprobacion-bg:      #FFF6E0;
+    --badge-os-aprobacion-text:    #8C6300;
+    --badge-os-reparacion-bg:      #EDE7F6;
+    --badge-os-reparacion-text:    #4527A0;
+    --badge-os-listo-bg:           #E8F5E9;
+    --badge-os-listo-text:         #1B5E20;
+    --badge-os-entregado-bg:       #ECEFF1;
+    --badge-os-entregado-text:     #263238;
+    --badge-os-cancelado-bg:       #FCE4EC;
+    --badge-os-cancelado-text:     #880E4F;
+}
+
+/* ══════════════════════════════════════════════════════════
+   DARK MODE — Paleta ZonaMarcol
+   ───────────────────────────────────────────────────────────
+   Acento: amarillo claro #FFC75A (más legible que #F5A800
+   sobre fondos oscuros).
+   ══════════════════════════════════════════════════════════ */
+body.dark-mode {
+
+    /* ── HEADER dark ── */
+    --header-bg:              #1F1F26;
+    --header-bg-hover:        #292930;
+    --header-text:            #E8E8EA;
+    --header-text-muted:      rgba(232,232,234,0.65);
+    --header-border:          rgba(255,255,255,0.06);
+    --header-shadow:          0 2px 12px rgba(0,0,0,0.50);
+    --header-btn-bg-hover:    rgba(255,255,255,0.06);
+    --header-btn-border:      rgba(255,255,255,0.12);
+
+    /* ── SIDEBAR dark ── */
+    --sidebar-bg-start:       #1F1F26;
+    --sidebar-bg-end:         #16161C;
+    --sidebar-text:           rgba(232,232,234,0.82);
+    --sidebar-text-active:    #FFC75A;
+    --sidebar-accent:         #FFC75A;
+    --sidebar-active-bg:      rgba(255,199,90,0.14);
+    --sidebar-hover-bg:       rgba(255,255,255,0.05);
+    --sidebar-border:         rgba(255,255,255,0.05);
+    --sidebar-header-bg:      rgba(0,0,0,0.20);
+    --sidebar-shadow:         2px 0 12px rgba(0,0,0,0.40);
+
+    /* ── BODY dark ── */
+    --body-bg:                #16161C;
+    --body-text:              #E8E8EA;
+    --body-text-muted:        #B0B0B8;
+    --body-text-inverse:      #16161C;
+
+    /* ── CARDS dark ── */
+    --card-bg:                #1F1F26;
+    --card-border:            rgba(255,255,255,0.06);
+    --card-shadow:            0 2px 10px rgba(0,0,0,0.40);
+    --card-shadow-hover:      0 8px 30px rgba(255,199,90,0.15);
+    --card-header-bg:         #292930;
+    --card-header-text:       #E8E8EA;
+    --card-header-border:     rgba(255,255,255,0.06);
+    --card-footer-bg:         #1C1C23;
+    --card-footer-text:       #B0B0B8;
+    --card-footer-border:     rgba(255,255,255,0.06);
+
+    /* ── TABLAS dark ── */
+    --table-bg:               transparent;
+    --table-text:             #E8E8EA;
+    --table-border:           #2E2E35;
+    --table-thead-bg:         #292930;
+    --table-thead-text:       #FFC75A;
+    --table-row-hover-bg:     rgba(255,199,90,0.08);
+    --table-row-stripe-bg:    rgba(255,255,255,0.025);
+
+    /* ── FORMULARIOS dark ── */
+    --input-bg:               #1C1C23;
+    --input-text:             #E8E8EA;
+    --input-placeholder:      #6E6E75;
+    --input-border:           #353540;
+    --input-border-focus:     #FFC75A;
+    --input-shadow-focus:     rgba(255,199,90,0.25);
+    --input-bg-disabled:      #1A1A20;
+    --input-text-disabled:    #565660;
+    --input-group-bg:         #292930;
+    --input-group-text:       #FFC75A;
+    --label-text:             #E8E8EA;
+
+    /* ── BOTONES dark ── */
+    --btn-primary-bg:         #F5A800;
+    --btn-primary-bg-hover:   #FFB81C;
+    --btn-primary-text:       #1F1F26;
+    --btn-primary-border:     #F5A800;
+    --btn-primary-shadow:     rgba(255,199,90,0.30);
+    --btn-shadow-hover:       0 4px 14px rgba(255,199,90,0.25);
+
+    /* ── ALERTS dark — contraste WCAG AA ── */
+    --alert-success-bg:       rgba(40,167,69,0.14);
+    --alert-success-text:     #6EE089;
+    --alert-success-border:   rgba(40,167,69,0.35);
+    --alert-danger-bg:        rgba(220,53,69,0.14);
+    --alert-danger-text:      #FF8787;
+    --alert-danger-border:    rgba(220,53,69,0.35);
+    --alert-warning-bg:       rgba(255,193,7,0.14);
+    --alert-warning-text:     #FFD54F;
+    --alert-warning-border:   rgba(255,193,7,0.35);
+    --alert-info-bg:          rgba(23,162,184,0.14);
+    --alert-info-text:        #80D8E8;
+    --alert-info-border:      rgba(23,162,184,0.35);
+
+    /* ── MODALES dark ── */
+    --modal-bg:               #1F1F26;
+    --modal-text:             #E8E8EA;
+    --modal-border:           rgba(255,255,255,0.08);
+    --modal-header-bg:        #292930;
+    --modal-header-text:      #E8E8EA;
+    --modal-footer-bg:        #1C1C23;
+    --modal-footer-border:    rgba(255,255,255,0.06);
+    --modal-shadow:           0 12px 48px rgba(0,0,0,0.60);
+
+    /* ── DROPDOWN dark ── */
+    --dropdown-bg:            #1F1F26;
+    --dropdown-text:          #E8E8EA;
+    --dropdown-border:        rgba(255,255,255,0.08);
+    --dropdown-item-hover-bg: rgba(255,199,90,0.12);
+    --dropdown-item-hover-text: #FFC75A;
+    --dropdown-shadow:        0 6px 24px rgba(0,0,0,0.50);
+
+    /* ── PAGINACIÓN dark ── */
+    --pagination-bg:          #1F1F26;
+    --pagination-text:        #FFC75A;
+    --pagination-border:      #353540;
+    --pagination-hover-bg:    #292930;
+    --pagination-active-bg:   #F5A800;
+    --pagination-active-text: #1F1F26;
+    --pagination-disabled-bg: #1A1A20;
+    --pagination-disabled-text: #565660;
+
+    /* ── ACCORDION dark ── */
+    --accordion-bg:           #1F1F26;
+    --accordion-text:         #E8E8EA;
+    --accordion-border:       rgba(255,255,255,0.08);
+    --accordion-btn-bg:       #292930;
+    --accordion-btn-text:     #E8E8EA;
+    --accordion-btn-active-bg: rgba(255,199,90,0.10);
+    --accordion-btn-active-text: #FFC75A;
+    --accordion-body-bg:      #1F1F26;
+
+    /* ── FOOTER dark ── */
+    --footer-bg:              #14141A;
+    --footer-text:            #E8E8EA;
+    --footer-text-muted:      rgba(232,232,234,0.55);
+    --footer-link:            #FFC75A;
+    --footer-link-hover:      #FFE0A1;
+    --footer-border:          rgba(255,255,255,0.06);
+
+    /* ── SCROLLBAR dark ── */
+    --scrollbar-track-bg:     #1A1A20;
+    --scrollbar-thumb-bg:     #FFC75A;
+    --scrollbar-thumb-hover:  #FFD580;
+
+    /* ── BORDES dark ── */
+    --border-color:           #2E2E35;
+    --border-color-light:     rgba(255,255,255,0.06);
+
+    /* ── GRÁFICAS dark ── */
+    --chart-color-1:          #FFC75A;
+    --chart-color-2:          #F5A800;
+    --chart-color-3:          #C58800;
+    --chart-color-4:          #80D8E8;
+    --chart-color-5:          #A5D6A7;
+    --chart-color-6:          #C39BD3;
+    --chart-grid-color:       rgba(255,255,255,0.06);
+    --chart-tooltip-bg:       #292930;
+    --chart-tooltip-text:     #E8E8EA;
+    --chart-tooltip-shadow:   0 4px 16px rgba(0,0,0,0.50);
+
+    /* ── OVERLAY dark ── */
+    --overlay-bg:             rgba(0,0,0,0.75);
+
+    /* ── ESTADOS PEDIDOS dark ── */
+    --badge-pendiente-bg:     rgba(230,81,0,0.18);
+    --badge-pendiente-text:   #FFBA80;
+    --badge-preparacion-bg:   rgba(255,199,90,0.18);
+    --badge-preparacion-text: #FFD580;
+    --badge-listo-bg:         rgba(76,175,80,0.18);
+    --badge-listo-text:       #A5D6A7;
+    --badge-camino-bg:        rgba(33,150,243,0.18);
+    --badge-camino-text:      #90CAF9;
+    --badge-entregado-bg:     rgba(76,175,80,0.18);
+    --badge-entregado-text:   #A5D6A7;
+    --badge-cancelado-bg:     rgba(244,143,177,0.15);
+    --badge-cancelado-text:   #F8BBD0;
+
+    /* ── ESTADOS SERVICIO TÉCNICO dark ── */
+    --badge-os-recibido-bg:        rgba(33,150,243,0.18);
+    --badge-os-recibido-text:      #90CAF9;
+    --badge-os-diagnostico-bg:     rgba(230,81,0,0.18);
+    --badge-os-diagnostico-text:   #FFBA80;
+    --badge-os-aprobacion-bg:      rgba(255,199,90,0.18);
+    --badge-os-aprobacion-text:    #FFD580;
+    --badge-os-reparacion-bg:      rgba(149,117,205,0.20);
+    --badge-os-reparacion-text:    #B39DDB;
+    --badge-os-listo-bg:           rgba(76,175,80,0.18);
+    --badge-os-listo-text:         #A5D6A7;
+    --badge-os-entregado-bg:       rgba(96,125,139,0.20);
+    --badge-os-entregado-text:     #B0BEC5;
+    --badge-os-cancelado-bg:       rgba(244,143,177,0.15);
+    --badge-os-cancelado-text:     #F8BBD0;
+}
+
+/* ══════════════════════════════════════════════════════════
+   AJUSTES GLOBALES DE LECTURA EN DARK MODE
+   ══════════════════════════════════════════════════════════ */
+body.dark-mode {
+    color-scheme: dark;
+}
+
+body.dark-mode .text-muted        { color: var(--body-text-muted) !important; }
+body.dark-mode .text-dark         { color: var(--body-text) !important; }
+body.dark-mode .text-primary      { color: var(--sidebar-accent) !important; }
+body.dark-mode .text-secondary    { color: var(--body-text-muted) !important; }
+body.dark-mode .border            { border-color: var(--border-color) !important; }
+body.dark-mode .border-top,
+body.dark-mode .border-bottom,
+body.dark-mode .border-start,
+body.dark-mode .border-end        { border-color: var(--border-color) !important; }
+
+body.dark-mode .bg-white          { background-color: var(--card-bg) !important; }
+body.dark-mode .bg-light          { background-color: var(--card-header-bg) !important; }
+body.dark-mode .bg-body           { background-color: var(--body-bg) !important; }
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    border-color: var(--input-border-focus);
+    box-shadow: 0 0 0 0.2rem var(--input-shadow-focus);
+}
+
+body.dark-mode .btn-outline-secondary {
+    color: var(--body-text-muted);
+    border-color: var(--border-color);
+}
+body.dark-mode .btn-outline-secondary:hover {
+    background-color: var(--card-header-bg);
+    color: var(--body-text);
+    border-color: var(--sidebar-accent);
+}
+
+body.dark-mode .btn-light {
+    background-color: var(--card-header-bg);
+    color: var(--body-text);
+    border-color: var(--border-color);
+}
+body.dark-mode .btn-light:hover {
+    background-color: var(--card-bg);
+    color: var(--sidebar-accent);
+    border-color: var(--sidebar-accent);
+}
+
+body.dark-mode a:not(.btn):not(.dropdown-item):not(.nav-link):not(.list-group-item) {
+    color: var(--sidebar-accent);
+}
+body.dark-mode a:not(.btn):not(.dropdown-item):not(.nav-link):not(.list-group-item):hover {
+    color: #FFE0A1;
+}

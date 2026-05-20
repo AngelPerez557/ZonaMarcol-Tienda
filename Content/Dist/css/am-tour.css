@@ -1,0 +1,236 @@
+/* ════════════════════════════════════════════════════════════════
+   am-tour.css — Estilos del tour guiado del admin
+   Override de Driver.js para diseño limpio, sin emojis,
+   branded a la paleta rosa de Zona Marcol.
+   ════════════════════════════════════════════════════════════════ */
+
+:root {
+    --am-tour-rosa:       #F5A800;
+    --am-tour-rosa-hover: #C58800;
+    --am-tour-rosa-dark:  #8C6300;
+    --am-tour-rosa-soft:  #fde9eb;
+    --am-tour-text:       #333;
+    --am-tour-text-muted: #666;
+    --am-tour-shadow:     0 12px 40px rgba(245, 168, 0, 0.25);
+}
+
+/* ── Popover principal ──────────────────────────────────────── */
+.driver-popover.am-driver-popover {
+    background: #fff;
+    border: none;
+    border-radius: 16px;
+    box-shadow: var(--am-tour-shadow);
+    padding: 0;
+    overflow: hidden;
+    max-width: 380px;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--am-tour-text);
+}
+
+/* ── Barra superior decorativa ──────────────────────────────── */
+.am-driver-popover::before {
+    content: '';
+    display: block;
+    height: 4px;
+    background: linear-gradient(90deg, var(--am-tour-rosa), var(--am-tour-rosa-dark));
+}
+
+/* ── Título ─────────────────────────────────────────────────── */
+.am-driver-popover .driver-popover-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--am-tour-rosa-dark);
+    padding: 18px 22px 6px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.3;
+}
+
+/* Ícono del título (FontAwesome inyectado por el JS) */
+.am-driver-popover .driver-popover-title .am-tour-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: var(--am-tour-rosa-soft);
+    color: var(--am-tour-rosa);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+}
+
+/* ── Descripción ────────────────────────────────────────────── */
+.am-driver-popover .driver-popover-description {
+    padding: 6px 22px 18px;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--am-tour-text);
+}
+
+.am-driver-popover .driver-popover-description strong {
+    color: var(--am-tour-rosa-dark);
+    font-weight: 600;
+}
+
+/* ── Footer (progreso + botones) ────────────────────────────── */
+.am-driver-popover .driver-popover-footer {
+    padding: 14px 22px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid #f3e6e7;
+    background: #fdfafa;
+}
+
+/* ── Indicador de progreso ──────────────────────────────────── */
+.am-driver-popover .driver-popover-progress-text {
+    font-size: 0.78rem;
+    color: var(--am-tour-text-muted);
+    margin-right: auto;
+    font-weight: 500;
+}
+
+/* ── Botones ────────────────────────────────────────────────── */
+.am-driver-popover .driver-popover-prev-btn,
+.am-driver-popover .driver-popover-next-btn,
+.am-driver-popover .driver-popover-close-btn {
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-shadow: none;
+    line-height: 1;
+}
+
+/* Botón "Atrás" — secundario */
+.am-driver-popover .driver-popover-prev-btn {
+    background: #fff;
+    color: var(--am-tour-rosa);
+    border: 1.5px solid var(--am-tour-rosa-soft);
+}
+
+.am-driver-popover .driver-popover-prev-btn:hover {
+    background: var(--am-tour-rosa-soft);
+    border-color: var(--am-tour-rosa);
+}
+
+/* Botón "Siguiente" / "Finalizar" — principal */
+.am-driver-popover .driver-popover-next-btn {
+    background: var(--am-tour-rosa);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(245, 168, 0, 0.3);
+}
+
+.am-driver-popover .driver-popover-next-btn:hover {
+    background: var(--am-tour-rosa-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(245, 168, 0, 0.4);
+}
+
+/* Botón X de cerrar — esquina superior derecha */
+.am-driver-popover .driver-popover-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: transparent;
+    color: var(--am-tour-text-muted);
+    padding: 4px 9px;
+    border-radius: 50%;
+    font-size: 1rem;
+    width: 28px;
+    height: 28px;
+}
+
+.am-driver-popover .driver-popover-close-btn:hover {
+    background: #f3e6e7;
+    color: var(--am-tour-rosa-dark);
+}
+
+/* ── Flechita del popover ───────────────────────────────────── */
+.am-driver-popover .driver-popover-arrow {
+    border-color: #fff;
+}
+
+/* ── Overlay del fondo ──────────────────────────────────────── */
+.driver-overlay {
+    background: rgba(0, 0, 0, 0.55) !important;
+}
+
+/* ── Elemento destacado del tour ────────────────────────────── */
+.driver-active-element,
+.driver-highlighted-element {
+    box-shadow: 0 0 0 4px var(--am-tour-rosa), 0 0 0 8px rgba(245, 168, 0, 0.3) !important;
+    border-radius: 8px !important;
+}
+
+/* ── Modo oscuro ────────────────────────────────────────────── */
+body.dark-mode .am-driver-popover {
+    background: #2a2a2e;
+    color: #e8e8ea;
+}
+
+body.dark-mode .am-driver-popover .driver-popover-title {
+    color: #ffb3b8;
+}
+
+body.dark-mode .am-driver-popover .driver-popover-description {
+    color: #d0d0d3;
+}
+
+body.dark-mode .am-driver-popover .driver-popover-description strong {
+    color: #ffb3b8;
+}
+
+body.dark-mode .am-driver-popover .driver-popover-footer {
+    background: #232327;
+    border-top-color: #3a3a3f;
+}
+
+body.dark-mode .am-driver-popover .driver-popover-prev-btn {
+    background: #2a2a2e;
+    color: #ffb3b8;
+    border-color: #4a3438;
+}
+
+body.dark-mode .am-driver-popover .driver-popover-prev-btn:hover {
+    background: #3a3a3f;
+}
+
+body.dark-mode .am-driver-popover .driver-popover-close-btn {
+    color: #b0b0b3;
+}
+
+body.dark-mode .am-driver-popover .driver-popover-title .am-tour-icon {
+    background: #3a2326;
+    color: #ffb3b8;
+}
+
+/* ── Responsive — móviles ───────────────────────────────────── */
+@media (max-width: 480px) {
+    .am-driver-popover {
+        max-width: calc(100vw - 24px);
+    }
+    .am-driver-popover .driver-popover-title {
+        font-size: 0.98rem;
+        padding: 16px 18px 4px;
+    }
+    .am-driver-popover .driver-popover-description {
+        padding: 4px 18px 16px;
+        font-size: 0.88rem;
+    }
+    .am-driver-popover .driver-popover-footer {
+        padding: 12px 18px 16px;
+        flex-wrap: wrap;
+    }
+    .am-driver-popover .driver-popover-next-btn,
+    .am-driver-popover .driver-popover-prev-btn {
+        padding: 7px 14px;
+        font-size: 0.82rem;
+    }
+}

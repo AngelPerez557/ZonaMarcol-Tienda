@@ -1,0 +1,40 @@
+# ─────────────────────────────────────────────
+# CONFIGURACIÓN GENERAL
+# ─────────────────────────────────────────────
+Options -Indexes
+ServerSignature Off
+
+# ─────────────────────────────────────────────
+# MOTOR DE REESCRITURA
+# ─────────────────────────────────────────────
+RewriteEngine On
+
+# DocumentRoot apunta directamente a la carpeta del proyecto
+# El puerto 9009 ya tiene como raíz C:\xampp\htdocs\Plantilla
+# Por eso RewriteBase es / y no /Plantilla/
+RewriteBase /
+
+# ─────────────────────────────────────────────
+# EXCEPCIÓN 1 — Archivos y carpetas reales
+# No redirigir si el archivo/carpeta existe físicamente
+# ─────────────────────────────────────────────
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# ─────────────────────────────────────────────
+# EXCEPCIÓN 2 — Login
+# Ruta limpia /Login → login.php directamente
+# ─────────────────────────────────────────────
+RewriteRule ^Login/?$ login.php [QSA,L]
+
+# ─────────────────────────────────────────────
+# EXCEPCIÓN 3 — API REST
+# Todo /API/... → APIR/index.php
+# ─────────────────────────────────────────────
+RewriteRule ^API/(.*)$ APIR/index.php?url=$1 [QSA,L]
+
+# ─────────────────────────────────────────────
+# REGLA PRINCIPAL — Todo lo demás → Front Controller
+# ─────────────────────────────────────────────
+RewriteRule ^(.+)/?$ index.php?url=$1 [QSA,L]

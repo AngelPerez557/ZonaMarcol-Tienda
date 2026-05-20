@@ -1,0 +1,970 @@
+/* ============================================================
+   CUSTOM THEMES — Sistema de estilos principal
+   Consume las variables definidas en variables.css
+   NO hay colores hardcodeados aquí — todo viene del :root
+   ============================================================ */
+
+/* ══════════════════════════════════════════════════════════
+   BASE
+   ══════════════════════════════════════════════════════════ */
+
+/* Estructura base del body — flex column para que el footer
+   siempre quede pegado al fondo sin importar el contenido */
+body,
+body#appBody {
+    font-family:      var(--font-family-base);
+    font-size:        var(--font-size-base);
+    line-height:      var(--line-height-base);
+    background-color: var(--body-bg);
+    color:            var(--body-text);
+    display:          flex;
+    flex-direction:   column;
+    min-height:       100vh;
+    overflow-x:       hidden;
+    margin:           0;
+    padding:          0;
+    transition:
+        background-color var(--transition-speed) var(--transition-ease),
+        color            var(--transition-speed) var(--transition-ease);
+}
+
+/* ══════════════════════════════════════════════════════════
+   HEADER SUPERIOR
+   ══════════════════════════════════════════════════════════ */
+
+/* Contenedor fijo en la parte superior — ocupa desde el borde
+   del sidebar hasta el borde derecho de la pantalla */
+.top-header,
+#topHeader {
+    position:         fixed;
+    top:              0;
+    left:             var(--sidebar-width);         /* Se ajusta al ancho del sidebar */
+    right:            0;
+    height:           var(--header-height);
+    background-color: var(--header-bg);
+    color:            var(--header-text);
+    box-shadow:       var(--header-shadow);
+    z-index:          var(--z-header);
+    padding:          0 1.25rem;
+    display:          flex;
+    align-items:      center;
+    justify-content:  space-between;
+    transition:       left var(--transition-speed) var(--transition-ease),
+                      background-color var(--transition-speed) var(--transition-ease);
+    border-bottom:    1px solid var(--header-border);
+}
+
+/* Cuando el sidebar está colapsado el header se expande hacia la izquierda */
+.top-header.sidebar-collapsed,
+#topHeader.sidebar-collapsed {
+    left: var(--sidebar-width-collapsed);
+}
+
+/* En móviles el header ocupa todo el ancho — el sidebar flota encima */
+@media (max-width: 991.98px) {
+    .top-header,
+    #topHeader {
+        left: 0 !important;
+    }
+}
+
+/* Botón hamburguesa para abrir/cerrar el sidebar */
+.btn-menu-toggle {
+    background:    none;
+    border:        none;
+    font-size:     1.5rem;
+    color:         var(--header-text);
+    cursor:        pointer;
+    padding:       0.5rem;
+    border-radius: var(--border-radius-md);
+    transition:    background-color var(--transition-speed) var(--transition-ease);
+    line-height:   1;
+}
+.btn-menu-toggle:hover {
+    background-color: var(--header-btn-bg-hover);
+}
+
+/* Botón para activar/desactivar el dark mode */
+.btn-theme-toggle {
+    background:    none;
+    border:        1px solid var(--header-btn-border);
+    color:         var(--header-text);
+    width:         42px;
+    height:        42px;
+    border-radius: var(--border-radius-md);
+    display:       flex;
+    align-items:   center;
+    justify-content: center;
+    font-size:     1.1rem;
+    cursor:        pointer;
+    transition:    all var(--transition-speed) var(--transition-ease);
+}
+.btn-theme-toggle:hover {
+    background-color: var(--header-btn-bg-hover);
+}
+.btn-theme-toggle i {
+    /* El ícono rota al cambiar de modo para dar feedback visual */
+    transition: transform var(--transition-speed) var(--transition-ease);
+}
+
+/* Botón de perfil del usuario en el header */
+.btn-profile {
+    background:    none;
+    border:        1px solid var(--header-btn-border);
+    color:         var(--header-text);
+    padding:       0.5rem 1rem;
+    border-radius: var(--border-radius-md);
+    cursor:        pointer;
+    transition:    all var(--transition-speed) var(--transition-ease);
+    font-size:     var(--font-size-sm);
+    font-weight:   var(--font-weight-medium);
+}
+.btn-profile:hover {
+    background-color: var(--header-btn-bg-hover);
+}
+
+/* ══════════════════════════════════════════════════════════
+   SIDEBAR
+   ══════════════════════════════════════════════════════════ */
+
+/* Sidebar fijo a la izquierda — ocupa toda la altura de la pantalla */
+.sidebar,
+aside.sidebar,
+#sidebar {
+    position:   fixed;
+    top:        0;
+    left:       0;
+    height:     100vh;
+    width:      var(--sidebar-width);
+    background: linear-gradient(
+                    180deg,
+                    var(--sidebar-bg-start) 0%,
+                    var(--sidebar-bg-end)   100%
+                );
+    color:      var(--sidebar-text);
+    z-index:    var(--z-sidebar);
+    box-shadow: var(--sidebar-shadow);
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: width      var(--transition-speed) var(--transition-ease),
+                transform  var(--transition-speed) var(--transition-ease),
+                box-shadow var(--transition-speed) var(--transition-ease);
+}
+
+/* En móviles el sidebar está oculto fuera de pantalla por defecto */
+@media (max-width: 991.98px) {
+    .sidebar,
+    aside.sidebar,
+    #sidebar {
+        transform: translateX(-100%);
+    }
+
+    /* Clase .show la agrega JS cuando el usuario abre el menú */
+    .sidebar.show,
+    aside.sidebar.show,
+    #sidebar.show {
+        transform: translateX(0);
+    }
+}
+
+/* Estado colapsado — solo muestra iconos */
+.sidebar.collapsed,
+#sidebar.collapsed {
+    width:    var(--sidebar-width-collapsed);
+    overflow: visible;
+}
+
+/* Al colapsar se ocultan los textos de marca y links */
+.sidebar.collapsed .sidebar-brand span,
+.sidebar.collapsed .sidebar-nav .nav-link span,
+.sidebar.collapsed .sidebar-nav .nav-link .nav-link-text {
+    opacity:     0;
+    width:       0;
+    overflow:    hidden;
+    white-space: nowrap;
+    margin:      0;
+}
+
+/* Los links se centran para mostrar solo el ícono */
+.sidebar.collapsed .sidebar-nav .nav-link {
+    justify-content: center;
+    padding:         0.75rem;
+}
+.sidebar.collapsed .sidebar-nav .nav-link i {
+    margin: 0;
+}
+
+/* La flecha del submenú se oculta cuando está colapsado */
+.sidebar.collapsed .sidebar-nav .nav-link .fa-chevron-down {
+    display: none;
+}
+
+/* Los submenús se ocultan completamente al colapsar */
+.sidebar.collapsed .sidebar-nav .collapse {
+    display: none !important;
+}
+
+/* Al hacer hover sobre el sidebar colapsado se expande temporalmente */
+.sidebar.collapsed:hover,
+#sidebar.collapsed:hover {
+    width:      var(--sidebar-width);
+    box-shadow: 4px 0 20px rgba(0,0,0,0.30);
+    z-index:    calc(var(--z-sidebar) + 1);
+    overflow-y: auto;
+}
+
+/* Al expandirse en hover se restauran los textos */
+.sidebar.collapsed:hover .sidebar-brand span,
+.sidebar.collapsed:hover .sidebar-nav .nav-link span {
+    opacity:     1;
+    width:       auto;
+    margin-left: 0.5rem;
+}
+
+/* Se restaura el layout normal de los links */
+.sidebar.collapsed:hover .sidebar-nav .nav-link {
+    justify-content: flex-start;
+    padding:         0.75rem 1rem;
+}
+.sidebar.collapsed:hover .sidebar-nav .nav-link i {
+    margin-right: 0.5rem;
+}
+.sidebar.collapsed:hover .sidebar-nav .nav-link .fa-chevron-down {
+    display:     block;
+    margin-left: auto;
+}
+
+/* Solo muestra submenús que fueron abiertos con clic */
+.sidebar.collapsed:hover .sidebar-nav .collapse:not(.show) {
+    display: none !important;
+}
+.sidebar.collapsed:hover .sidebar-nav .collapse.show {
+    display: block !important;
+}
+
+/* Header interno del sidebar — contiene logo y botón de cierre */
+.sidebar-header {
+    padding:          1rem;
+    border-bottom:    1px solid var(--sidebar-border);
+    background-color: var(--sidebar-header-bg);
+    display:          flex;
+    align-items:      center;
+    justify-content:  space-between;
+    white-space:      nowrap;
+    transition:       padding var(--transition-speed) var(--transition-ease);
+}
+
+/* Al colapsar el header interno se centra */
+.sidebar.collapsed .sidebar-header {
+    padding:         1rem 0.75rem;
+    justify-content: center;
+}
+.sidebar.collapsed:hover .sidebar-header {
+    padding:         1rem;
+    justify-content: space-between;
+}
+
+/* Logo dentro del sidebar */
+.sidebar-header img,
+.sidebar img,
+#sidebar img {
+    max-height:  36px;
+    height:      36px;
+    width:       auto;
+    max-width:   160px;
+    object-fit:  contain;
+}
+
+/* Nombre/marca del sistema junto al logo */
+.sidebar-brand {
+    color:           var(--sidebar-text-active);
+    text-decoration: none;
+    font-size:       var(--font-size-xl);
+    font-weight:     var(--font-weight-bold);
+    display:         flex;
+    align-items:     center;
+    gap:             0.5rem;
+    overflow:        hidden;
+}
+.sidebar-brand:hover {
+    color: var(--sidebar-accent);
+}
+
+/* Botón X para cerrar el sidebar en móviles */
+.btn-close-sidebar {
+    background:    none;
+    border:        none;
+    color:         var(--sidebar-text);
+    font-size:     1.25rem;
+    cursor:        pointer;
+    padding:       0.5rem;
+    border-radius: var(--border-radius-sm);
+    flex-shrink:   0;
+    transition:    background-color var(--transition-speed) var(--transition-ease);
+}
+.btn-close-sidebar:hover {
+    background-color: var(--sidebar-hover-bg);
+}
+
+/* Solo visible en móviles — en desktop no se muestra */
+@media (min-width: 992px) {
+    .btn-close-sidebar {
+        display: none !important;
+    }
+}
+
+/* Contenedor de la navegación del sidebar */
+.sidebar-nav {
+    padding: 1rem 0;
+}
+.sidebar-nav .nav {
+    list-style: none;
+    padding:    0;
+    margin:     0;
+}
+.sidebar-nav .nav-item {
+    margin: 0.25rem 0;
+}
+
+/* Links de navegación del sidebar */
+.sidebar-nav .nav-link {
+    color:           var(--sidebar-text);
+    padding:         0.75rem 1.5rem;
+    display:         flex;
+    align-items:     center;
+    text-decoration: none;
+    font-weight:     var(--font-weight-medium);
+    white-space:     nowrap;
+    border-left:     3px solid transparent;
+    position:        relative;
+    transition:      all var(--transition-speed) var(--transition-ease);
+}
+
+/* Transición suave del texto al colapsar/expandir */
+.sidebar-nav .nav-link span {
+    transition: opacity var(--transition-speed) var(--transition-ease),
+                width   var(--transition-speed) var(--transition-ease),
+                margin  var(--transition-speed) var(--transition-ease);
+}
+
+/* Hover del link — acento izquierdo y fondo sutil */
+.sidebar-nav .nav-link:hover {
+    background-color: var(--sidebar-hover-bg);
+    color:            var(--sidebar-text-active);
+    border-left-color: var(--sidebar-accent);
+    padding-left:     1.75rem;
+}
+
+/* Link activo — marca la sección actual */
+.sidebar-nav .nav-link.active {
+    background-color:  var(--sidebar-active-bg);
+    color:             var(--sidebar-accent);
+    border-left-color: var(--sidebar-accent);
+    font-weight:       var(--font-weight-bold);
+}
+
+/* Ícono del link — ancho fijo para alineación perfecta */
+.sidebar-nav .nav-link i {
+    width:      20px;
+    text-align: center;
+    flex-shrink: 0;
+    margin-right: 0.75rem;
+}
+.sidebar.collapsed .sidebar-nav .nav-link i {
+    width:     auto;
+    font-size: 1.1rem;
+}
+
+/* Flecha del submenú — rota al expandirse */
+.sidebar-nav .nav-link .fa-chevron-down {
+    margin-left: auto;
+    font-size:   0.75rem;
+    transition:  transform var(--transition-speed) var(--transition-ease);
+}
+.sidebar-nav .nav-link[aria-expanded="true"] .fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+/* Links de submenú — indentados y más pequeños */
+.sidebar-nav .collapse .nav-link {
+    padding-left: var(--sidebar-submenu-pl);
+    font-size:    var(--sidebar-font-size-sub);
+}
+.sidebar-nav .collapse .nav-link:hover {
+    padding-left: calc(var(--sidebar-submenu-pl) + 0.25rem);
+}
+
+/* Submenús solo se abren con clic — no con hover en desktop */
+.sidebar:not(.collapsed) .sidebar-nav .nav-item:hover > .collapse:not(.show) {
+    display: none !important;
+}
+.sidebar:not(.collapsed) .sidebar-nav .nav-link[aria-expanded="true"] + .collapse,
+.sidebar .sidebar-nav .nav-link[aria-expanded="true"] + .collapse {
+    display: block !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   OVERLAY MÓVIL
+   ══════════════════════════════════════════════════════════ */
+
+/* Capa oscura que aparece detrás del sidebar en móviles
+   Al hacer clic sobre ella JS cierra el sidebar */
+.sidebar-overlay {
+    position:   fixed;
+    top:        0;
+    left:       0;
+    width:      100%;
+    height:     100%;
+    background: var(--overlay-bg);
+    z-index:    var(--z-overlay);
+    opacity:    0;
+    visibility: hidden;
+    transition: opacity    var(--transition-speed) var(--transition-ease),
+                visibility var(--transition-speed) var(--transition-ease);
+}
+.sidebar-overlay.show {
+    opacity:    1;
+    visibility: visible;
+}
+
+/* El overlay solo existe en móviles */
+@media (min-width: 992px) {
+    .sidebar-overlay {
+        display: none !important;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   CONTENIDO PRINCIPAL
+   ══════════════════════════════════════════════════════════ */
+
+/* Empuja el contenido para que no quede debajo del sidebar ni del header */
+.main-content,
+#mainContent {
+    margin-left:      var(--sidebar-width);
+    padding-top:      var(--main-content-pt);
+    flex:             1;
+    display:          flex;
+    flex-direction:   column;
+    background-color: var(--body-bg);
+    transition:       margin-left      var(--transition-speed) var(--transition-ease),
+                      background-color var(--transition-speed) var(--transition-ease);
+}
+
+/* Cuando el sidebar está colapsado el contenido se expande */
+.main-content.sidebar-collapsed,
+#mainContent.sidebar-collapsed {
+    margin-left: var(--sidebar-width-collapsed);
+}
+
+/* En móviles el contenido ocupa todo el ancho */
+@media (max-width: 991.98px) {
+    .main-content,
+    #mainContent {
+        margin-left: 0 !important;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   CARDS
+   ══════════════════════════════════════════════════════════ */
+
+.card {
+    background-color: var(--card-bg);
+    border:           1px solid var(--card-border);
+    border-radius:    var(--card-border-radius);
+    box-shadow:       var(--card-shadow);
+    animation:        fadeIn var(--transition-speed-slow) var(--transition-ease);
+    transition:       transform   var(--transition-speed) var(--transition-ease),
+                      box-shadow  var(--transition-speed) var(--transition-ease),
+                      background-color var(--transition-speed) var(--transition-ease);
+}
+.card:hover {
+    transform:  translateY(-4px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+/* Header de la card */
+.card-header {
+    background-color: var(--card-header-bg);
+    color:            var(--card-header-text);
+    border-bottom:    1px solid var(--card-header-border);
+    font-weight:      var(--font-weight-semibold);
+}
+
+/* Card header con clase bg-primary usa el acento del sidebar */
+.card-header.bg-primary {
+    background-color: var(--sidebar-accent) !important;
+    color:            var(--body-text-inverse) !important;
+    border-bottom:    none;
+}
+
+/* Footer de la card */
+.card-footer {
+    background-color: var(--card-footer-bg);
+    color:            var(--card-footer-text);
+    border-top:       1px solid var(--card-footer-border);
+}
+
+/* Animación de entrada de cards */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════════════════════════
+   TABLAS
+   ══════════════════════════════════════════════════════════ */
+
+.table {
+    /* Sobreescribe las variables internas de Bootstrap 5 */
+    --bs-table-color:         var(--table-text);
+    --bs-table-bg:            var(--table-bg);
+    --bs-table-border-color:  var(--table-border);
+    --bs-table-hover-color:   var(--table-text);
+    --bs-table-hover-bg:      var(--table-row-hover-bg);
+    --bs-table-striped-color: var(--table-text);
+    --bs-table-striped-bg:    var(--table-row-stripe-bg);
+    color:                    var(--table-text);
+    border-radius:            var(--table-border-radius);
+    overflow:                 hidden;
+}
+
+/* Todas las celdas */
+.table > :not(caption) > * > * {
+    color:            var(--table-text);
+    border-bottom-color: var(--table-border);
+}
+
+/* Encabezado de tabla */
+.table thead > tr > * {
+    background-color: var(--table-thead-bg);
+    color:            var(--table-thead-text);
+    font-weight:      var(--font-weight-semibold);
+    font-size:        var(--font-size-sm);
+    text-transform:   uppercase;
+    letter-spacing:   0.5px;
+    border-bottom:    none;
+}
+
+/* ══════════════════════════════════════════════════════════
+   FORMULARIOS
+   ══════════════════════════════════════════════════════════ */
+
+/* Labels */
+label,
+.form-label {
+    color:       var(--label-text);
+    font-weight: var(--font-weight-medium);
+    font-size:   var(--font-size-sm);
+}
+
+/* Inputs y selects */
+.form-control,
+.form-select {
+    background-color: var(--input-bg);
+    color:            var(--input-text);
+    border:           1px solid var(--input-border);
+    border-radius:    var(--input-border-radius);
+    font-size:        var(--font-size-base);
+    transition:       border-color var(--transition-speed) var(--transition-ease),
+                      box-shadow   var(--transition-speed) var(--transition-ease),
+                      background-color var(--transition-speed) var(--transition-ease);
+}
+.form-control::placeholder {
+    color: var(--input-placeholder);
+}
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--input-bg);
+    color:            var(--input-text);
+    border-color:     var(--input-border-focus);
+    box-shadow:       0 0 0 0.2rem var(--input-shadow-focus);
+    outline:          none;
+}
+
+/* Inputs deshabilitados */
+.form-control:disabled,
+.form-select:disabled {
+    background-color: var(--input-bg-disabled);
+    color:            var(--input-text-disabled);
+    cursor:           not-allowed;
+}
+
+/* Input group */
+.input-group-text {
+    background-color: var(--input-group-bg);
+    color:            var(--input-group-text);
+    border-color:     var(--input-border);
+}
+
+/* Checkboxes y radios */
+.form-check-input {
+    background-color: var(--input-bg);
+    border-color:     var(--input-border);
+    transition:       background-color var(--transition-speed) var(--transition-ease);
+}
+.form-check-input:checked {
+    background-color: var(--sidebar-accent);
+    border-color:     var(--sidebar-accent);
+}
+.form-check-label {
+    color: var(--label-text);
+}
+
+/* ══════════════════════════════════════════════════════════
+   BOTONES
+   ══════════════════════════════════════════════════════════ */
+
+.btn {
+    border-radius: var(--btn-border-radius);
+    font-weight:   var(--font-weight-medium);
+    transition:    all var(--transition-speed) var(--transition-ease);
+}
+.btn:hover {
+    transform:  translateY(-2px);
+    box-shadow: var(--btn-shadow-hover);
+}
+
+/* Botón primario */
+.btn-primary {
+    background-color: var(--btn-primary-bg) !important;
+    border-color:     var(--btn-primary-border) !important;
+    color:            var(--btn-primary-text) !important;
+}
+.btn-primary:hover {
+    background-color: var(--btn-primary-bg-hover) !important;
+    border-color:     var(--btn-primary-bg-hover) !important;
+}
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: var(--btn-primary-bg-hover) !important;
+    border-color:     var(--btn-primary-bg-hover) !important;
+    box-shadow:       0 0 0 0.2rem var(--btn-primary-shadow) !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   DROPDOWN
+   ══════════════════════════════════════════════════════════ */
+
+.dropdown-menu {
+    background-color: var(--dropdown-bg);
+    border:           1px solid var(--dropdown-border);
+    border-radius:    var(--dropdown-border-radius);
+    box-shadow:       var(--dropdown-shadow);
+    padding:          0.5rem;
+    margin-top:       8px;
+}
+.dropdown-item {
+    color:         var(--dropdown-text);
+    border-radius: var(--dropdown-item-border-radius);
+    padding:       0.5rem 1rem;
+    margin:        2px 0;
+    transition:    all var(--transition-speed) var(--transition-ease);
+}
+.dropdown-item:hover {
+    background-color: var(--dropdown-item-hover-bg);
+    color:            var(--dropdown-item-hover-text);
+    transform:        translateX(3px);
+}
+
+/* Item de logout siempre rojo independiente del tema */
+.dropdown-item-logout:hover {
+    background-color: #DC3545 !important;
+    color:            #FFFFFF !important;
+}
+.dropdown-divider {
+    border-color: var(--border-color);
+    margin:       0.25rem 0;
+}
+
+/* ══════════════════════════════════════════════════════════
+   MODALES
+   ══════════════════════════════════════════════════════════ */
+
+.modal-content {
+    background-color: var(--modal-bg);
+    color:            var(--modal-text);
+    border:           1px solid var(--modal-border);
+    border-radius:    var(--modal-border-radius);
+    box-shadow:       var(--modal-shadow);
+}
+.modal-header {
+    background-color: var(--modal-header-bg);
+    color:            var(--modal-header-text);
+    border-bottom:    1px solid var(--modal-border);
+}
+.modal-footer {
+    background-color: var(--modal-footer-bg);
+    border-top:       1px solid var(--modal-footer-border);
+}
+
+/* Botón de cierre del modal en dark mode */
+body.dark-mode .modal-header .btn-close {
+    filter: invert(1);
+}
+
+/* ══════════════════════════════════════════════════════════
+   ALERTS
+   ══════════════════════════════════════════════════════════ */
+
+.alert {
+    border-radius: var(--alert-border-radius);
+    font-weight:   var(--font-weight-medium);
+}
+.alert-success {
+    background-color: var(--alert-success-bg);
+    color:            var(--alert-success-text);
+    border-color:     var(--alert-success-border);
+}
+.alert-danger {
+    background-color: var(--alert-danger-bg);
+    color:            var(--alert-danger-text);
+    border-color:     var(--alert-danger-border);
+}
+.alert-warning {
+    background-color: var(--alert-warning-bg);
+    color:            var(--alert-warning-text);
+    border-color:     var(--alert-warning-border);
+}
+.alert-info {
+    background-color: var(--alert-info-bg);
+    color:            var(--alert-info-text);
+    border-color:     var(--alert-info-border);
+}
+
+/* ══════════════════════════════════════════════════════════
+   PAGINACIÓN
+   ══════════════════════════════════════════════════════════ */
+
+.page-link {
+    background-color: var(--pagination-bg);
+    color:            var(--pagination-text);
+    border-color:     var(--pagination-border);
+    transition:       all var(--transition-speed) var(--transition-ease);
+}
+.page-link:hover {
+    background-color: var(--pagination-hover-bg);
+    border-color:     var(--pagination-border);
+    color:            var(--pagination-text);
+}
+.page-item.active .page-link {
+    background-color: var(--pagination-active-bg);
+    border-color:     var(--pagination-active-bg);
+    color:            var(--pagination-active-text);
+}
+.page-item.disabled .page-link {
+    background-color: var(--pagination-disabled-bg);
+    color:            var(--pagination-disabled-text);
+    border-color:     var(--pagination-border);
+}
+
+/* ══════════════════════════════════════════════════════════
+   ACCORDION
+   ══════════════════════════════════════════════════════════ */
+
+.accordion-item {
+    background-color: var(--accordion-bg);
+    border-color:     var(--accordion-border);
+    color:            var(--accordion-text);
+}
+.accordion-button {
+    background-color: var(--accordion-btn-bg);
+    color:            var(--accordion-btn-text);
+}
+.accordion-button:not(.collapsed) {
+    background-color: var(--accordion-btn-active-bg);
+    color:            var(--accordion-btn-active-text);
+    box-shadow:       none;
+}
+.accordion-body {
+    background-color: var(--accordion-body-bg);
+    color:            var(--accordion-text);
+}
+
+/* Flecha del accordion en dark mode */
+body.dark-mode .accordion-button::after {
+    filter: invert(1);
+}
+
+/* ══════════════════════════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════════════════════════ */
+
+.footer {
+    background-color: var(--footer-bg) !important;
+    color:            var(--footer-text) !important;
+    flex-shrink:      0;
+    order:            999;
+    width:            100%;
+    position:         relative;
+    z-index:          1;
+    border-top:       1px solid var(--footer-border);
+    transition:       background-color var(--transition-speed) var(--transition-ease);
+}
+.footer a {
+    color:      var(--footer-link) !important;
+    transition: color var(--transition-speed) var(--transition-ease);
+}
+.footer a:hover {
+    color: var(--footer-link-hover) !important;
+}
+.footer .text-muted {
+    color: var(--footer-text-muted) !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   SCROLLBAR
+   ══════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+    width: var(--scrollbar-width);
+}
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track-bg);
+}
+::-webkit-scrollbar-thumb {
+    background:    var(--scrollbar-thumb-bg);
+    border-radius: var(--scrollbar-border-radius);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* ══════════════════════════════════════════════════════════
+   UTILIDADES
+   ══════════════════════════════════════════════════════════ */
+
+/* Logo en selector de temas o headers */
+.img-logo-selection {
+    height:     40px;
+    object-fit: contain;
+}
+
+/* Sombras semánticas reutilizables */
+.shadow-sm { box-shadow: var(--shadow-sm) !important; }
+.shadow-md { box-shadow: var(--shadow-md) !important; }
+.shadow-lg { box-shadow: var(--shadow-lg) !important; }
+
+/* Bordes de énfasis */
+.border-primary,
+.border-success,
+.border-warning {
+    border-width: 2px !important;
+}
+
+/* Flecha animada — para pantallas vacías o indicadores */
+.big-arrow {
+    font-size:  8rem;
+    color:      var(--sidebar-accent);
+    margin-top: 1rem;
+    animation:  bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40%  { transform: translateY(-30px); }
+    60%  { transform: translateY(-15px); }
+}
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE GENERAL
+   ══════════════════════════════════════════════════════════ */
+
+/* Tablets */
+@media (max-width: 991.98px) {
+    .sidebar-overlay { display: block; }
+}
+
+/* Desktop — oculta elementos exclusivos de móvil */
+@media (min-width: 992px) {
+    .sidebar-overlay   { display: none !important; }
+    .btn-close-sidebar { display: none !important; }
+}
+
+/* Móviles pequeños */
+@media (max-width: 575.98px) {
+    .top-header,
+    #topHeader {
+        padding: 0 0.75rem;
+    }
+
+    /* En móvil los textos del header se reducen */
+    .btn-profile span {
+        display: none;
+    }
+}
+@media (min-width: 992px) {
+    .sidebar,
+    aside.sidebar,
+    #sidebar {
+        transform: translateX(0);
+    }
+}
+#sidebar::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+}
+/* ── FIX 3 — Badge notificaciones con mejor contraste ─────── */
+.badge-notif {
+    background-color: #c0392b !important; /* rojo oscuro — alto contraste sobre rosa */
+    color:            #ffffff !important;
+    border:           2px solid #ffffff;  /* borde blanco para separarlo del fondo */
+}
+ 
+/* ── FIX 8 — Botón modo oscuro más visible en topbar ──────── */
+.btn-theme-toggle {
+    border:        1.5px solid rgba(255,255,255,0.6) !important;
+    border-radius: var(--border-radius-md);
+    padding:       6px 10px;
+}
+.btn-theme-toggle:hover {
+    background-color: rgba(255,255,255,0.25) !important;
+    border-color:     rgba(255,255,255,0.9) !important;
+}
+ 
+/* ── FIX 4 — Logo visible en topbar móvil ─────────────────── */
+.navbar-brand-mobile {
+    display:     none;
+    align-items: center;
+}
+@media (max-width: 991.98px) {
+    .navbar-brand-mobile {
+        display:    flex !important;
+        position:   absolute;
+        left:       50%;
+        transform:  translateX(-50%);
+        pointer-events: none; /* no bloquea clicks en botones del header */
+    }
+    .navbar-brand-mobile img {
+        height:     32px;
+        width:      auto;
+        object-fit: contain;
+        max-width:  140px;
+    }
+}
+ 
+/* ── FIX 2 — Detalle venta: th sin wrap + total sin corte ──── */
+.table th {
+    white-space: nowrap;
+}
+/* Celda total en pie de tabla */
+.table tfoot td {
+    white-space: nowrap;
+}
+ 
+/* ── FIX 7 — Botones de acción en tablas estandarizados ───── */
+/* Usar estas clases en Ventas/index, Caja/Historial, Facturas */
+.btn-accion-ver {
+    /* igual que btn-outline-primary pero consistente entre vistas */
+}
+/* Forzar btn-outline-secondary en todos los botones de imprimir */
+.btn-imprimir {
+    color:        #6c757d !important;
+    border-color: #6c757d !important;
+    background:   transparent !important;
+}
+.btn-imprimir:hover {
+    color:       #fff !important;
+    background:  #6c757d !important;
+}

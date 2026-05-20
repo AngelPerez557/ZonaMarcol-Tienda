@@ -60,8 +60,8 @@ define('APP_URL', $protocol . '://' . $host . $base);
 define('DB_HOST',    'localhost');
 define('DB_PORT',    '3306');
 define('DB_NAME',    'zonamarcol');
-define('DB_USER',    'zonamarcol_user');
-define('DB_PASSWORD','AaPR2005_');
+define('DB_USER',    'ZonaMarcol');
+define('DB_PASSWORD','AaPR2005');
 define('DB_PASS',    DB_PASSWORD);
 define('DB_CHARSET', 'utf8mb4');
 

@@ -32,6 +32,12 @@ $menu = [
         ['Id'=>34,'Nombre'=>'Descuentos', 'Url'=>APP_URL.'Descuentos/index', 'Icono'=>'fas fa-percent',    'Permiso'=>'productos.editar'],
     ]],
 
+    // Camisetas — catálogo del módulo de camisas de fútbol.
+    // Los hijos se agregan a medida que existe cada Controller (evita 404).
+    'Camisetas' => ['Id'=>13,'Nombre'=>'Camisetas','Url'=>'#','Icono'=>'fas fa-tshirt','Permiso'=>'camisetas.catalogo','Children'=>[
+        ['Id'=>131,'Nombre'=>'Torneos', 'Url'=>APP_URL.'Torneos/index', 'Icono'=>'fas fa-trophy', 'Permiso'=>'camisetas.catalogo'],
+    ]],
+
     'Clientes' => ['Id'=>6,'Nombre'=>'Clientes','Url'=>APP_URL.'Clientes/index','Icono'=>'fas fa-users','Permiso'=>'clientes.ver'],
 
     'Tienda' => ['Id'=>8,'Nombre'=>'Tienda','Url'=>'#','Icono'=>'fas fa-store','Permiso'=>'','Children'=>[

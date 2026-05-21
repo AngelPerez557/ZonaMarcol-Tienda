@@ -897,3 +897,54 @@ a {
         grid-template-columns: repeat(4, 1fr);
     }
 }
+
+/* ── OVERRIDES BOOTSTRAP — TEMA OSCURO DEL STOREFRONT ──────────
+   La tienda reutiliza componentes Bootstrap (.card, .form-control,
+   .form-select) en Login, Registro, Mi Perfil, etc. Bootstrap los
+   pinta en claro por defecto; estos overrides los alinean al tema
+   oscuro. Alcance: solo tienda.css → no afecta el panel admin. */
+
+.card {
+    background-color: var(--white);
+    border: 1px solid var(--rosa-soft);
+    color: var(--texto);
+}
+
+.card-body,
+.card-title,
+.card-text { color: var(--texto); }
+
+.form-control,
+.form-select {
+    background-color: var(--bg);
+    border: 1px solid var(--rosa-soft);
+    color: var(--texto);
+}
+
+.form-control::placeholder { color: #777777; }
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--bg);
+    border-color: var(--rosa);
+    color: var(--texto);
+    box-shadow: 0 0 0 0.2rem rgba(245,168,0,0.20);
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+    background-color: #1d1d1d;
+    color: var(--texto-sub);
+}
+
+.form-label { color: var(--texto); }
+
+.input-group-text {
+    background-color: var(--white);
+    border: 1px solid var(--rosa-soft);
+    color: var(--texto-sub);
+}
+
+/* .text-muted de Bootstrap (#6c757d) queda muy apagado sobre superficie
+   oscura — se aclara para mantener legibilidad. */
+.text-muted { color: #9a9a9a !important; }

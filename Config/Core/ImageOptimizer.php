@@ -9,7 +9,7 @@
  *   1. PESO — convierte JPG/PNG a WebP (típicamente 70-80% más pequeñas
  *      con la misma calidad visual). Una imagen de 2 MB pasa a ~250 KB.
  *
- *   2. DIMENSIONES — redimensiona al ancho máximo configurado (1200px
+ *   2. DIMENSIONES — redimensiona al ancho máximo configurado (1920px
  *      por defecto). Lo que sube el usuario rara vez se ve a más de
  *      ese tamaño en la app, así que guardar 4000px es desperdicio.
  *
@@ -23,7 +23,7 @@
  *       'prod_'
  *   );
  *   if ($nombreFinal === null) {
- *       // Error: archivo inválido / sin GD / fallo de conversión
+ *       // Error: leer ImageOptimizer::$lastError para el motivo real
  *   }
  */
 class ImageOptimizer
@@ -44,8 +44,15 @@ class ImageOptimizer
     // 92 da ~60% de ahorro sin que se note diferencia.
     private const QUALITY = 92;
 
-    // Tamaño máximo del archivo de entrada (5 MB).
-    private const MAX_INPUT_SIZE = 5 * 1024 * 1024;
+    // Tamaño máximo del archivo de entrada (10 MB).
+    // Debe ir alineado con upload_max_filesize de PHP. El optimizador comprime
+    // fuerte después (10 MB en crudo → cientos de KB como WebP), así que un
+    // límite holgado de entrada no impacta el almacenamiento final.
+    private const MAX_INPUT_SIZE = 10 * 1024 * 1024;
+
+    // Motivo del último fallo de process(). El Controller lo lee para mostrar
+    // un mensaje real en vez de uno genérico. null = sin error / éxito.
+    public static ?string $lastError = null;
 
     /**
      * Procesa un archivo subido vía $_FILES y lo guarda como .webp.
@@ -57,28 +64,49 @@ class ImageOptimizer
      */
     public static function process(array $file, string $destinoDir, string $prefijo = 'img_'): ?string
     {
+        self::$lastError = null;
+
         // 1. Validaciones básicas
-        if (empty($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        // El código de error de $_FILES distingue el motivo real: si la imagen
+        // supera upload_max_filesize, PHP entrega error = UPLOAD_ERR_INI_SIZE.
+        $err = (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE);
+        if (empty($file) || $err !== UPLOAD_ERR_OK) {
+            self::$lastError = self::uploadErrorMessage($err);
             return null;
         }
-        if (($file['size'] ?? 0) > self::MAX_INPUT_SIZE) return null;
-        if (!is_uploaded_file($file['tmp_name'])) return null;
+        if (($file['size'] ?? 0) > self::MAX_INPUT_SIZE) {
+            $maxMb = (int) (self::MAX_INPUT_SIZE / 1024 / 1024);
+            self::$lastError = "La imagen pesa más de {$maxMb} MB. Redúcela e intenta de nuevo.";
+            return null;
+        }
+        if (!is_uploaded_file($file['tmp_name'])) {
+            self::$lastError = 'Origen de archivo inválido.';
+            return null;
+        }
 
         // 2. Validación MIME real (no se confía en la extensión)
         $mime = self::detectMime($file['tmp_name']);
         if (!in_array($mime, ['image/jpeg', 'image/png', 'image/webp'], true)) {
+            self::$lastError = 'Formato no permitido. Usa JPG, PNG o WEBP.';
             return null;
         }
 
         // 3. Si GD no está disponible, fallback a guardar tal cual
         if (!function_exists('imagecreatefromjpeg') ||
             !function_exists('imagewebp')) {
-            return self::fallbackMove($file, $destinoDir, $prefijo);
+            $nombre = self::fallbackMove($file, $destinoDir, $prefijo);
+            if ($nombre === null) {
+                self::$lastError = 'No se pudo guardar la imagen (GD no disponible).';
+            }
+            return $nombre;
         }
 
         // 4. Cargar la imagen original según su MIME
         $img = self::loadImage($file['tmp_name'], $mime);
-        if ($img === null) return null;
+        if ($img === null) {
+            self::$lastError = 'La imagen está dañada o no se pudo leer.';
+            return null;
+        }
 
         // 5. Redimensionar si excede MAX_WIDTH
         $img = self::resizeIfNeeded($img);
@@ -91,7 +119,34 @@ class ImageOptimizer
         $ok = @imagewebp($img, $rutaCompleta, self::QUALITY);
         imagedestroy($img);
 
-        return $ok ? $nombreArchivo : null;
+        if (!$ok) {
+            self::$lastError = 'No se pudo procesar la imagen (conversión a WebP).';
+            return null;
+        }
+        return $nombreArchivo;
+    }
+
+    /**
+     * Traduce un código de error de $_FILES[...]['error'] a un mensaje legible.
+     * Centraliza el mapeo para que los Controllers no lo dupliquen.
+     */
+    private static function uploadErrorMessage(int $err): string
+    {
+        switch ($err) {
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                return 'La imagen supera el límite de subida del servidor. '
+                     . 'Sube upload_max_filesize en php.ini o usa una imagen más liviana.';
+            case UPLOAD_ERR_PARTIAL:
+                return 'La subida se interrumpió. Intenta de nuevo.';
+            case UPLOAD_ERR_NO_FILE:
+                return 'No se seleccionó ninguna imagen.';
+            case UPLOAD_ERR_NO_TMP_DIR:
+            case UPLOAD_ERR_CANT_WRITE:
+                return 'Error del servidor al recibir el archivo.';
+            default:
+                return 'No se pudo subir la imagen.';
+        }
     }
 
     /**

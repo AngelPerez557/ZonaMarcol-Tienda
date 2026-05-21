@@ -126,10 +126,13 @@ class ProductosController
             $imageUrl = $this->subirImagen($_FILES['imagen'], PRODUCT_IMAGE_UPLOAD_DIR);
 
             if ($imageUrl === null) {
+                // Mensaje real del fallo (tamaño, formato, archivo dañado, etc.)
+                // — lo expone ImageOptimizer en lugar de un texto genérico fijo.
                 $_SESSION['alert'] = [
                     'icon'  => 'error',
                     'title' => 'Error de imagen',
-                    'text'  => 'Solo se permiten imágenes JPG, PNG o WEBP menores a 2MB.',
+                    'text'  => ImageOptimizer::$lastError
+                               ?? 'No se pudo procesar la imagen. Usa JPG, PNG o WEBP.',
                 ];
                 $redirect = $esEdicion
                     ? APP_URL . 'Productos/registry/' . $id

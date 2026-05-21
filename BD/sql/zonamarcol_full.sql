@@ -3308,17 +3308,12 @@ VALUES (1, NULL, NULL, NULL, NULL, NULL, '000', '001',
 -- ─────────────────────────────────────────────────
 INSERT INTO zonas_envio (nombre, costo) VALUES
     ('Retiro en tienda',          0.00),
-    ('Tegucigalpa centro',       50.00),
-    ('Tegucigalpa periferia',    80.00),
-    ('Comayagüela',              60.00),
-    ('Valle de Ángeles',        150.00);
+
 
 -- ─────────────────────────────────────────────────
 -- CATEGORÍAS PRODUCTOS
 -- ─────────────────────────────────────────────────
 INSERT INTO categorias (nombre, descripcion) VALUES
-    ('Cuidado facial masculino', 'Limpiadores, hidratantes, antiedad para hombre'),
-    ('Cuidado capilar',          'Champú, gel, ceras, productos para barba'),
     ('Accesorios tecnológicos',  'Cables, cargadores, soportes, periféricos'),
     ('Audio',                    'Audífonos, parlantes, micrófonos'),
     ('Gaming',                   'Controles, headsets, alfombrillas, accesorios gamer'),

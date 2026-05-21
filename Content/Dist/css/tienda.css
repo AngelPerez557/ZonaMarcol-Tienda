@@ -1,8 +1,10 @@
 /* ============================================================
    TIENDA.CSS — Zona Marcol
    Complementa el <style> inline del template Tienda/index.php
-   Paleta: --rosa #F5A800 | --rosa-hover #C58800
-           --rosa-dark #8C6300 | --rosa-soft #FFF1C8
+   Paleta TEMA OSCURO:
+     --rosa #F5A800 (acento) | --rosa-hover #D4900A
+     --bg #1a1a1a (página)   | --white #222222 (superficie)
+     --texto #e6e6e6         | --texto-sub #8a8a8a
    ============================================================ */
 
 /* ── RESET & BASE ──────────────────────────────────────────── */
@@ -13,20 +15,25 @@
 }
 
 :root {
+    /* Acento de marca — se mantiene el amarillo ZonaMarcol */
     --rosa:       #F5A800;
-    --rosa-hover: #C58800;
-    --rosa-dark:  #8C6300;
-    --rosa-soft:  #FFF1C8;
-    --texto:      #333333;
-    --texto-sub:  #666666;
-    --bg:         #FFFBF2;
-    --white:      #ffffff;
+    --rosa-hover: #D4900A;
+    --rosa-dark:  #B5790A;
+    /* Acento translúcido: sirve de borde y de fondo suave sobre oscuro */
+    --rosa-soft:  rgba(245,168,0,0.12);
+    /* Texto sobre fondo oscuro */
+    --texto:      #e6e6e6;
+    --texto-sub:  #8a8a8a;
+    /* Superficies: --bg = página, --white = tarjeta/navbar/input */
+    --bg:         #1a1a1a;
+    --white:      #222222;
     --radius-sm:  8px;
     --radius-md:  12px;
     --radius-lg:  20px;
-    --shadow-sm:  0 2px 8px rgba(245,168,0,0.10);
-    --shadow-md:  0 8px 24px rgba(245,168,0,0.18);
-    --shadow-lg:  0 16px 40px rgba(245,168,0,0.22);
+    /* Sombras neutras (las versiones con tinte amarillo no rinden en oscuro) */
+    --shadow-sm:  0 2px 8px rgba(0,0,0,0.40);
+    --shadow-md:  0 8px 24px rgba(0,0,0,0.50);
+    --shadow-lg:  0 16px 40px rgba(0,0,0,0.60);
     --transition: 0.22s ease;
 }
 
@@ -54,7 +61,7 @@ a {
 
 /* ── HERO / BANNER FALLBACK ────────────────────────────────── */
 .hero-fallback {
-    background: linear-gradient(135deg, #FFF1C8 0%, #FFFBF2 60%, #fce4e6 100%);
+    background: linear-gradient(135deg, #222222 0%, #1a1a1a 60%, #1d1d1d 100%);
     padding: clamp(60px, 10vw, 100px) 0;
     text-align: center;
     position: relative;
@@ -169,7 +176,7 @@ a {
 /* ── PRODUCTO CARD ─────────────────────────────────────────── */
 .producto-card {
     background: var(--white);
-    border: 1px solid #F0E2BC;
+    border: 1px solid var(--rosa-soft);
     border-radius: var(--radius-md);
     overflow: hidden;
     transition: transform var(--transition), box-shadow var(--transition);
@@ -325,7 +332,7 @@ a {
 
 /* ── SECCIÓN COMBOS ────────────────────────────────────────── */
 .seccion-combos {
-    background: linear-gradient(135deg, #FFF1C8 0%, #fce8e9 100%);
+    background: linear-gradient(135deg, #232323 0%, #1a1a1a 100%);
     padding: 56px 0;
 }
 
@@ -361,7 +368,7 @@ a {
     border-radius: 16px;
     padding: clamp(36px, 6vw, 64px) clamp(24px, 5vw, 80px);
     text-align: center;
-    box-shadow: 0 12px 40px rgba(176,90,96,0.3);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.55);
 }
 
 .cta-citas h3 {
@@ -462,7 +469,7 @@ a {
     top: -6px;
     right: -6px;
     background: #dc3545;
-    color: var(--white);
+    color: #ffffff;
     border-radius: 50%;
     width: 20px;
     height: 20px;
@@ -481,7 +488,7 @@ a {
     right: 24px;
     z-index: 9999;
     background: #2d2d2d;
-    color: var(--white);
+    color: #ffffff;
     padding: 13px 22px;
     border-radius: var(--radius-md);
     display: none;
@@ -501,15 +508,15 @@ a {
 
 /* ── FOOTER ────────────────────────────────────────────────── */
 .tienda-footer {
-    background: #2d2d2d;
-    color: #bbb;
+    background: #111111;
+    color: #bbbbbb;
     padding: 48px 0 24px;
     margin-top: 64px;
 }
 
 .tienda-footer h5,
 .tienda-footer h6 {
-    color: var(--white);
+    color: #ffffff;
     font-weight: 700;
 }
 
@@ -519,7 +526,7 @@ a {
     transition: color var(--transition);
 }
 
-.tienda-footer a:hover { color: #f5a0a5; }
+.tienda-footer a:hover { color: #FFC75A; }
 
 .tienda-footer ul li {
     margin-bottom: 6px;
@@ -583,8 +590,8 @@ a {
 }
 
 .dropdown-tienda .dropdown-item.text-danger:hover {
-    background: #fdecea;
-    color: #dc3545 !important;
+    background: rgba(220,53,69,0.15);
+    color: #ff6b6b !important;
 }
 
 /* ── DISPONIBILIDAD CITAS ──────────────────────────────────── */
@@ -601,8 +608,8 @@ a {
 }
 
 .dia-no-laboral {
-    background: rgba(0,0,0,0.03) !important;
-    color: #ccc !important;
+    background: rgba(255,255,255,0.04) !important;
+    color: #777 !important;
     cursor: not-allowed;
 }
 
@@ -639,7 +646,7 @@ a {
 }
 
 .input-busqueda::placeholder {
-    color: #bbb;
+    color: #777777;
 }
 
 /* ── PÁGINA LOGIN / REGISTRO ───────────────────────────────── */
@@ -779,7 +786,7 @@ a {
     background: var(--rosa-soft);
     border: 1px solid rgba(245,168,0,0.3);
     border-radius: var(--radius-sm);
-    color: var(--rosa-dark);
+    color: var(--rosa);
     padding: 12px 16px;
     font-size: 0.9rem;
     display: flex;

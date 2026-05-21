@@ -109,3 +109,4 @@ SELECT u.`id`, u.`nombre`, u.`email`, u.`username`, r.`slug` AS rol
 FROM `users` u
 JOIN `roles` r ON r.`id` = u.`rol_id`
 ORDER BY u.`id`;
+// ------------------------------------------------------------

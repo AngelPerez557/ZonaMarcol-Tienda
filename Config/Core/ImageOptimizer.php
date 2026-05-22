@@ -91,12 +91,14 @@ class ImageOptimizer
             return null;
         }
 
-        // 3. Si GD no está disponible, fallback a guardar tal cual
-        if (!function_exists('imagecreatefromjpeg') ||
-            !function_exists('imagewebp')) {
+        // 3. Si GD no está disponible o no soporta WebP, fallback a guardar tal cual
+        $gdAvailable = function_exists('gd_info');
+        $canCreate = function_exists('imagecreatefromjpeg') || function_exists('imagecreatefrompng') || function_exists('imagecreatefromwebp');
+        $canSaveWebP = function_exists('imagewebp');
+        if (!$gdAvailable || !$canCreate || !$canSaveWebP) {
             $nombre = self::fallbackMove($file, $destinoDir, $prefijo);
             if ($nombre === null) {
-                self::$lastError = 'No se pudo guardar la imagen (GD no disponible).';
+                self::$lastError = 'No se pudo guardar la imagen (GD/WebP no disponible).';
             }
             return $nombre;
         }
@@ -194,13 +196,33 @@ class ImageOptimizer
             return null;
         }
 
+        // Verificar funciones específicas para el MIME
+        if ($mime === 'image/jpeg' && !function_exists('imagecreatefromjpeg')) return null;
+        if ($mime === 'image/png'  && !function_exists('imagecreatefrompng'))  return null;
+        if ($mime === 'image/webp' && !function_exists('imagecreatefromwebp')) return null;
+
         $img = self::loadImage($sourcePath, $mime);
         if ($img === null) return null;
 
         $img = self::resizeIfNeeded($img);
 
+        // Forzar extensión .webp en destino para evitar confusiones
         if ($destinoPath === null) {
             $destinoPath = preg_replace('/\.(jpe?g|png|webp)$/i', '.webp', $sourcePath);
+        } else {
+            $destinoPath = preg_replace('/\.(jpe?g|png|webp)$/i', '.webp', $destinoPath);
+            if (!preg_match('/\.webp$/i', $destinoPath)) {
+                $destinoPath .= '.webp';
+            }
+        }
+
+        // Asegurar directorio destino
+        $destDir = dirname($destinoPath);
+        if (!is_dir($destDir)) @mkdir($destDir, 0755, true);
+        if (!is_dir($destDir) || !is_writable($destDir)) {
+            imagedestroy($img);
+            error_log('[ImageOptimizer] destino no escribible: ' . $destDir);
+            return null;
         }
 
         $ok = @imagewebp($img, $destinoPath, self::QUALITY);

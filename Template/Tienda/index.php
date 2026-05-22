@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?? APP_NAME ?> | Zona Marcol</title>
-    <link rel="icon" type="image/png" href="<?= APP_URL ?>Content/Demo/img/zonamarcol_bg.png">
+    <link rel="icon" type="image/png" href="<?= APP_URL ?>Content/Demo/img/zonamarcol_Logo.png">
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -23,36 +23,30 @@
     <link rel="apple-touch-icon" href="<?= APP_URL ?>Content/Demo/img/icon/icon-tienda-192.png">
 
     <style>
-        /* Paleta TEMA OSCURO — este :root se carga DESPUÉS de tienda.css,
-           así que redefine los tokens; debe quedar idéntico a tienda.css. */
         :root {
             --rosa:       #F5A800;
-            --rosa-hover: #D4900A;
-            --rosa-dark:  #B5790A;
-            --rosa-soft:  rgba(245,168,0,0.12);
-            --bg:         #1a1a1a;
-            --white:      #222222;
-            --texto:      #e6e6e6;
-            --texto-sub:  #8a8a8a;
+            --rosa-hover: #C58800;
+            --rosa-dark:  #8C6300;
+            --rosa-soft:  #FFF1C8;
         }
 
         * { box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--texto);
+            background: #FFFBF2;
+            color: #333;
         }
 
         /* ── NAVBAR ── */
         .tienda-navbar {
-            background: #141414;
+            background: #fff;
             border-bottom: 2px solid var(--rosa-soft);
             padding: 12px 0;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.45);
+            box-shadow: 0 2px 8px rgba(245,168,0,0.1);
         }
 
         .tienda-brand {
@@ -64,7 +58,7 @@
         .tienda-brand:hover { color: var(--rosa-hover); }
 
         .nav-tienda .nav-link {
-            color: var(--texto-sub);
+            color: #555;
             font-weight: 500;
             padding: 6px 14px;
             border-radius: 20px;
@@ -79,7 +73,7 @@
         .btn-carrito {
             position: relative;
             background: var(--rosa);
-            color: #1a1a1a;
+            color: #fff;
             border: none;
             border-radius: 20px;
             padding: 8px 16px;
@@ -87,7 +81,7 @@
             text-decoration: none;
             transition: background 0.2s;
         }
-        .btn-carrito:hover { background: var(--rosa-hover); color: #1a1a1a; }
+        .btn-carrito:hover { background: var(--rosa-hover); color: #fff; }
 
         .badge-carrito {
             position: absolute;
@@ -105,7 +99,7 @@
 
         /* ── FIX 1 — Menú móvil ── */
         #menuMobile .nav-link {
-            color: var(--texto-sub);
+            color: #555555;
             font-weight: 500;
             padding: 8px 14px;
             border-radius: 8px;
@@ -120,27 +114,27 @@
 
         /* ── CARDS PRODUCTO ── */
         .producto-card {
-            border: 1px solid var(--rosa-soft);
+            border: 1px solid #F0E2BC;
             border-radius: 12px;
             overflow: hidden;
             transition: transform 0.2s, box-shadow 0.2s;
-            background: var(--white);
+            background: #fff;
         }
         .producto-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+            box-shadow: 0 8px 24px rgba(245,168,0,0.2);
         }
         .producto-img {
             height: 200px;
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
-            background-color: var(--bg);
+            background-color: #FFFBF2;
         }
 
         .btn-rosa {
             background: var(--rosa);
-            color: #1a1a1a;
+            color: #fff;
             border: none;
             border-radius: 8px;
             padding: 8px 16px;
@@ -148,7 +142,7 @@
             transition: background 0.2s;
             cursor: pointer;
         }
-        .btn-rosa:hover { background: var(--rosa-hover); color: #1a1a1a; }
+        .btn-rosa:hover { background: var(--rosa-hover); color: #fff; }
 
         .btn-rosa-outline {
             background: transparent;
@@ -161,12 +155,12 @@
             cursor: pointer;
             text-decoration: none;
         }
-        .btn-rosa-outline:hover { background: var(--rosa); color: #1a1a1a; }
+        .btn-rosa-outline:hover { background: var(--rosa); color: #fff; }
 
         /* ── FOOTER ── */
         .tienda-footer {
-            background: #111111;
-            color: #bbbbbb;
+            background: #3d3d3d;
+            color: #ccc;
             padding: 40px 0 20px;
             margin-top: 60px;
         }
@@ -205,8 +199,8 @@
             padding: 6px 16px;
             border-radius: 20px;
             border: 2px solid var(--rosa-soft);
-            background: var(--white);
-            color: var(--texto-sub);
+            background: #fff;
+            color: #555;
             cursor: pointer;
             font-size: 0.85rem;
             font-weight: 500;
@@ -214,7 +208,7 @@
             text-decoration: none;
         }
         .chip-categoria:hover,
-        .chip-categoria.activo { background: var(--rosa); border-color: var(--rosa); color: #1a1a1a; }
+        .chip-categoria.activo { background: var(--rosa); border-color: var(--rosa); color: #fff; }
 
         /* ── Responsive móvil navbar ── */
         @media (max-width: 767px) {
@@ -231,7 +225,7 @@
         /* ── DISPONIBILIDAD CITAS ── */
         .dia-disponible  { background: rgba(40,167,69,0.15) !important; border-color: #28a745 !important; cursor: pointer; }
         .dia-ocupado     { background: rgba(220,53,69,0.08) !important; color: #aaa !important; cursor: not-allowed; }
-        .dia-no-laboral  { background: rgba(255,255,255,0.04) !important; color: #777 !important; cursor: not-allowed; }
+        .dia-no-laboral  { background: rgba(0,0,0,0.03) !important; color: #ccc !important; cursor: not-allowed; }
 
         /* ── DROPDOWN CLIENTE ── */
         .dropdown-tienda .dropdown-toggle {
@@ -249,22 +243,22 @@
         .dropdown-tienda .dropdown-toggle:active,
         .dropdown-tienda .show > .dropdown-toggle {
             background: var(--rosa) !important;
-            color: #1a1a1a !important;
+            color: #fff !important;
             border-color: var(--rosa) !important;
             box-shadow: none !important;
         }
         .dropdown-tienda .dropdown-menu {
-            background: var(--white);
+            background: #fff;
             border: 1.5px solid var(--rosa-soft);
             border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+            box-shadow: 0 8px 24px rgba(245,168,0,0.18);
             padding: 6px;
             min-width: 180px;
             margin-top: 6px;
         }
         .dropdown-tienda .dropdown-item {
             border-radius: 8px;
-            color: var(--texto-sub);
+            color: #555;
             font-weight: 500;
             padding: 8px 14px;
             transition: all 0.15s;
@@ -272,7 +266,7 @@
         .dropdown-tienda .dropdown-item:hover { background: var(--rosa-soft); color: var(--rosa); }
         .dropdown-tienda .dropdown-item i { color: var(--rosa); }
         .dropdown-tienda .dropdown-divider { border-color: var(--rosa-soft); margin: 4px 0; }
-        .dropdown-tienda .dropdown-item.text-danger:hover { background: rgba(220,53,69,0.15); color: #ff6b6b !important; }
+        .dropdown-tienda .dropdown-item.text-danger:hover { background: #fdecea; color: #dc3545 !important; }
 
         /* ── CARRITO FLOTANTE MÓVIL ── */
         .btn-carrito-flotante {
@@ -285,9 +279,9 @@
             height: 58px;
             border-radius: 50%;
             background: var(--rosa);
-            color: #1a1a1a;
+            color: #fff;
             border: none;
-            box-shadow: 0 4px 16px rgba(245,168,0,0.45);
+            box-shadow: 0 4px 16px rgba(245,168,0,0.5);
             align-items: center;
             justify-content: center;
             font-size: 1.3rem;
@@ -296,7 +290,7 @@
         }
         .btn-carrito-flotante:hover {
             background: var(--rosa-hover);
-            color: #1a1a1a;
+            color: #fff;
             transform: scale(1.08);
         }
         .btn-carrito-flotante .badge-flotante {
@@ -327,9 +321,9 @@
 
         /* ── F-39 Banner WebView (Instagram, Facebook, etc.) ── */
         .webview-banner {
-            background: rgba(245,168,0,0.10);
-            color: var(--texto);
-            border-bottom: 1px solid rgba(245,168,0,0.25);
+            background: #fff8e6;
+            color: #6b4d00;
+            border-bottom: 1px solid #f0d779;
             padding: 10px 14px;
             font-size: 0.85rem;
             display: flex;
@@ -340,7 +334,7 @@
         .webview-banner i.fa-info-circle { color: #d49e00; flex-shrink: 0; }
         .webview-banner .wb-action {
             background: var(--rosa);
-            color: #1a1a1a;
+            color: #fff;
             padding: 5px 12px;
             border-radius: 16px;
             text-decoration: none;
@@ -349,11 +343,11 @@
             white-space: nowrap;
             flex-shrink: 0;
         }
-        .webview-banner .wb-action:hover { background: var(--rosa-hover); color: #1a1a1a; }
+        .webview-banner .wb-action:hover { background: var(--rosa-hover); color: #fff; }
         .webview-banner .wb-close {
             background: transparent;
             border: none;
-            color: var(--texto-sub);
+            color: #6b4d00;
             cursor: pointer;
             padding: 2px 6px;
             flex-shrink: 0;

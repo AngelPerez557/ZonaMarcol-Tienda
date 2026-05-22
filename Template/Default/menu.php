@@ -35,7 +35,15 @@ $menu = [
     // Camisetas — catálogo del módulo de camisas de fútbol.
     // Los hijos se agregan a medida que existe cada Controller (evita 404).
     'Camisetas' => ['Id'=>13,'Nombre'=>'Camisetas','Url'=>'#','Icono'=>'fas fa-tshirt','Permiso'=>'camisetas.catalogo','Children'=>[
-        ['Id'=>131,'Nombre'=>'Torneos', 'Url'=>APP_URL.'Torneos/index', 'Icono'=>'fas fa-trophy', 'Permiso'=>'camisetas.catalogo'],
+        ['Id'=>131,'Nombre'=>'Torneos',       'Url'=>APP_URL.'Torneos/index',       'Icono'=>'fas fa-trophy',     'Permiso'=>'camisetas.catalogo'],
+        ['Id'=>132,'Nombre'=>'Equipos',       'Url'=>APP_URL.'Equipos/index',       'Icono'=>'fas fa-shield-alt', 'Permiso'=>'camisetas.catalogo'],
+        ['Id'=>133,'Nombre'=>'Competiciones', 'Url'=>APP_URL.'Competiciones/index', 'Icono'=>'fas fa-medal',      'Permiso'=>'camisetas.catalogo'],
+        ['Id'=>134,'Nombre'=>'Equipaciones',  'Url'=>APP_URL.'Equipaciones/index',  'Icono'=>'fas fa-tshirt',     'Permiso'=>'camisetas.catalogo'],
+    ]],
+
+    // Servicio Técnico — taller de reparación. Los hijos se agregan por etapa.
+    'Servicio' => ['Id'=>14,'Nombre'=>'Servicio Técnico','Url'=>'#','Icono'=>'fas fa-wrench','Permiso'=>'servicio.catalogo','Children'=>[
+        ['Id'=>141,'Nombre'=>'Catálogo de servicios','Url'=>APP_URL.'Servicios/index','Icono'=>'fas fa-clipboard-list','Permiso'=>'servicio.catalogo'],
     ]],
 
     'Clientes' => ['Id'=>6,'Nombre'=>'Clientes','Url'=>APP_URL.'Clientes/index','Icono'=>'fas fa-users','Permiso'=>'clientes.ver'],

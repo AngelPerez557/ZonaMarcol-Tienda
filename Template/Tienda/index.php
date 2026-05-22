@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?? APP_NAME ?> | Zona Marcol</title>
     <link rel="icon" type="image/png" href="<?= APP_URL ?>Content/Demo/img/zonamarcol_Logo.png">
+    <link rel="icon" type="image/png" href="<?= APP_URL ?>Content/Demo/img/zonamarcol_Letras.png">
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -12,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- CSS Tienda -->
     <link rel="stylesheet" href="<?= APP_URL ?>Content/Dist/css/tienda.css">
+    <link rel="stylesheet" href="<?= APP_URL ?>Content/Dist/css/Custom/custom-themes.css">
 
     <!-- PWA Tienda -->
     <link rel="manifest" href="<?= APP_URL ?>manifest-tienda.json">
@@ -358,8 +360,9 @@
             .webview-banner .wb-action { font-size: 0.72rem; padding: 4px 10px; }
         }
     </style>
+    <?php $darkMode = isset($_SESSION['dark_mode']) && $_SESSION['dark_mode'] === true; ?>
 </head>
-<body>
+<body<?= $darkMode ? ' class="dark-mode"' : '' ?>>
 
     <?php
     // F-39 — Banner solo si entra desde Instagram / Facebook / TikTok / etc.
@@ -553,6 +556,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Dark mode toggle script -->
+    <script src="<?= APP_URL ?>Content/Dist/js/theme-switcher.js"></script>
 
     <script>
     const APP_URL = '<?= APP_URL ?>';

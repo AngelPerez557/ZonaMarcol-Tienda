@@ -173,3 +173,55 @@ if (!function_exists('calcDesc')) {
         </a>
     </div>
 </div>
+
+<!-- ─── SERVICIOS TÉCNICOS (SI HAY) ───────────── -->
+<?php if (!empty($servicios)): ?>
+<div class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0">Servicios técnicos</h3>
+        <a href="<?= APP_URL ?>Servicios/index" class="btn-rosa-outline">Ver todos</a>
+    </div>
+    <div class="row g-3">
+        <?php foreach ($servicios as $s): ?>
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="producto-card p-3" style="background:#fff8ed;">
+                <h5 class="mb-2 fw-semibold"><?= htmlspecialchars($s->nombre) ?></h5>
+                <p class="text-muted mb-2" style="font-size:0.9rem;"><?= nl2br(htmlspecialchars($s->descripcion)) ?></p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="fw-bold" style="color:var(--rosa);">L. <?= number_format((float)$s->precio,2) ?></div>
+                    <a href="<?= APP_URL ?>Servicios/registry/<?= $s->id ?>" class="btn-rosa-outline">Ver</a>
+                </div>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php endif; ?>
+
+<!-- ─── CAMISETAS / EQUIPACIONES (SI HAY) ─────── -->
+<?php if (!empty($equipaciones)): ?>
+<div class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0">Camisetas y equipaciones</h3>
+        <a href="<?= APP_URL ?>Equipaciones/index" class="btn-rosa-outline">Ver catálogo</a>
+    </div>
+    <div class="row g-3">
+        <?php foreach ($equipaciones as $eq): ?>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="producto-card">
+                <div style="position:relative;">
+                    <a href="<?= APP_URL ?>Equipaciones/registry/<?= $eq->id ?>">
+                        <div class="producto-img" style="background-image:url('<?= $eq->getImagenUrl() ?>'); height:160px;"></div>
+                    </a>
+                </div>
+                <div class="p-3">
+                    <h6 class="fw-semibold mb-1"><?= htmlspecialchars($eq->equipo_nombre ?? 'Equipación') ?> — <?= $eq->getVersionLabel() ?></h6>
+                    <div class="fw-bold mb-2" style="color:var(--rosa);"><?= $eq->getPrecioFormateado() ?></div>
+                    <a href="<?= APP_URL ?>Equipaciones/registry/<?= $eq->id ?>" class="btn-rosa w-100 d-block text-center">Ver</a>
+                </div>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php endif; ?>

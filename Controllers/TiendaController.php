@@ -31,6 +31,12 @@ class TiendaController
         $pageTitle           = 'Inicio';
         $banners             = $this->bannerModel->findActivos();
         $productos           = $this->productoModel->findActivos();
+        // Cargar servicios y equipaciones para mostrarlos en la página principal
+        $servicioModel    = new ServicioCatalogoModel();
+        $equipacionModel  = new EquipacionModel();
+        $servicios        = $servicioModel->findActivos();
+        $equipacionesAll  = $equipacionModel->findAll();
+        $equipaciones     = array_values(array_filter($equipacionesAll, fn($e) => $e->isActivo()));
         $categorias          = $this->categoriaModel->findAll();
         $descuentoModel      = new DescuentoModel();
         $descuentoActivo     = $descuentoModel->getActivo();
@@ -49,7 +55,8 @@ class TiendaController
 
         $this->render('Inicio.php', compact(
             'pageTitle','banners','productosDestacados',
-            'categorias','descuentoActivo','favoritosIds'
+            'categorias','descuentoActivo','favoritosIds',
+            'servicios','equipaciones'
         ));
     }
     public function catalogo(string $catId = ''): void

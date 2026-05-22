@@ -179,7 +179,12 @@ if (APP_ENV === 'development') {
 if (!function_exists('slugify')) {
     function slugify(string $text): string
     {
-        $text = mb_strtolower($text, 'UTF-8');
+        // Prefer mb_strtolower when available (multibyte), fallback to strtolower
+        if (function_exists('mb_strtolower')) {
+            $text = mb_strtolower($text, 'UTF-8');
+        } else {
+            $text = strtolower($text);
+        }
         $map  = ['á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u',
                  'ñ'=>'n','ü'=>'u','à'=>'a','è'=>'e','ì'=>'i','ò'=>'o','ù'=>'u'];
         $text = strtr($text, $map);

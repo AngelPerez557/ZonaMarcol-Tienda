@@ -115,12 +115,43 @@ class ImageOptimizer
         $nombreArchivo = uniqid($prefijo, true) . '.webp';
         $rutaCompleta  = rtrim($destinoDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $nombreArchivo;
 
+        // Asegurar que el directorio destino exista y sea escribible
+        if (!is_dir($destinoDir)) {
+            @mkdir($destinoDir, 0755, true);
+        }
+        if (!is_dir($destinoDir) || !is_writable($destinoDir)) {
+            imagedestroy($img);
+            self::$lastError = 'No se pudo guardar la imagen: destino no disponible o no escribible.';
+            error_log('[ImageOptimizer] Destino no escribible: ' . $destinoDir);
+            return null;
+        }
+
         // 7. Guardar como WebP
         $ok = @imagewebp($img, $rutaCompleta, self::QUALITY);
         imagedestroy($img);
 
         if (!$ok) {
-            self::$lastError = 'No se pudo procesar la imagen (conversión a WebP).';
+            // Intentar identificar el error y hacer fallback a mover el archivo original
+            $last = error_get_last();
+            $detail = $last['message'] ?? '';
+            $msg = 'No se pudo procesar la imagen (conversión a WebP).';
+            if ($detail) $msg .= ' ' . $detail;
+            self::$lastError = $msg;
+            error_log('[ImageOptimizer] imagewebp failed: ' . $detail . ' — destino: ' . $rutaCompleta);
+
+            // Fallback: intentar mover el archivo subido tal cual (mantener extensión original)
+            $extension = strtolower(pathinfo($file['name'] ?? 'img.jpg', PATHINFO_EXTENSION));
+            $extension = $extension ?: 'jpg';
+            $fallbackName = uniqid($prefijo, true) . '.' . $extension;
+            $fallbackPath = rtrim($destinoDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $fallbackName;
+
+            if (isset($file['tmp_name']) && is_uploaded_file($file['tmp_name'])) {
+                if (@move_uploaded_file($file['tmp_name'], $fallbackPath)) {
+                    // Devolver el nombre fallback y conservar el mensaje de error para depuración
+                    return $fallbackName;
+                }
+            }
+
             return null;
         }
         return $nombreArchivo;

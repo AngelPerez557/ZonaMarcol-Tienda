@@ -32,6 +32,29 @@
             --rosa-soft:  #FFF1C8;
         }
 
+        /* Dark-mode palette overrides (applies when body has class "dark-mode") */
+        body.dark-mode {
+            --rosa:       #F5A800;
+            --rosa-hover: #C58800;
+            --rosa-dark:  #8C6300;
+            --rosa-soft:  rgba(245,168,0,0.06);
+            background: #0b1220;
+            color: #e6eef8;
+        }
+
+        body.dark-mode .tienda-navbar {
+            background: #071025;
+            border-bottom-color: rgba(245,168,0,0.06);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.6);
+        }
+        body.dark-mode .producto-card {
+            background: #071025;
+            border: 1px solid rgba(255,255,255,0.04);
+            color: #e6eef8;
+        }
+        body.dark-mode .producto-img { background-color: #071025; }
+        body.dark-mode .tienda-footer { background: linear-gradient(90deg, #051018, #071018); color: #cbd6e6; }
+
         * { box-sizing: border-box; }
 
         body {

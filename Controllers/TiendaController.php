@@ -28,6 +28,9 @@ class TiendaController
 
    public function index(): void
     {
+        // Forzar modo oscuro en la tienda (se puede cambiar luego vía toggle)
+        $_SESSION['dark_mode'] = true;
+
         $pageTitle           = 'Inicio';
         $banners             = $this->bannerModel->findActivos();
         $productos           = $this->productoModel->findActivos();
@@ -58,6 +61,25 @@ class TiendaController
             'categorias','descuentoActivo','favoritosIds',
             'servicios','equipaciones'
         ));
+    }
+
+    public function servicios(): void
+    {
+        $pageTitle = 'Servicios';
+        $servicioModel = new ServicioCatalogoModel();
+        $servicios = $servicioModel->findActivos();
+
+        $this->render('Servicios.php', compact('pageTitle','servicios'));
+    }
+
+    public function equipaciones(): void
+    {
+        $pageTitle = 'Equipaciones';
+        $equipacionModel = new EquipacionModel();
+        $equipacionesAll = $equipacionModel->findAll();
+        $equipaciones = array_values(array_filter($equipacionesAll, fn($e) => $e->isActivo()));
+
+        $this->render('Equipaciones.php', compact('pageTitle','equipaciones'));
     }
     public function catalogo(string $catId = ''): void
     {

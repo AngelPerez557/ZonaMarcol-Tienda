@@ -179,7 +179,7 @@ if (!function_exists('calcDesc')) {
 <div class="container mb-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold mb-0">Servicios técnicos</h3>
-        <a href="<?= APP_URL ?>Servicios/index" class="btn-rosa-outline">Ver todos</a>
+        <a href="<?= APP_URL ?>Tienda/servicios" class="btn-rosa-outline">Ver todos</a>
     </div>
     <div class="row g-3">
         <?php foreach ($servicios as $s): ?>
@@ -203,7 +203,7 @@ if (!function_exists('calcDesc')) {
 <div class="container mb-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold mb-0">Camisetas y equipaciones</h3>
-        <a href="<?= APP_URL ?>Equipaciones/index" class="btn-rosa-outline">Ver catálogo</a>
+        <a href="<?= APP_URL ?>Tienda/equipaciones" class="btn-rosa-outline">Ver catálogo</a>
     </div>
     <div class="row g-3">
         <?php foreach ($equipaciones as $eq): ?>

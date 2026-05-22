@@ -125,6 +125,26 @@ class ImageOptimizer
             imagedestroy($img);
             self::$lastError = 'No se pudo guardar la imagen: destino no disponible o no escribible.';
             error_log('[ImageOptimizer] Destino no escribible: ' . $destinoDir);
+
+            // Registro diagnóstico en proyecto para facilitar debugging local
+            try {
+                $debug = [
+                    'time' => date('c'),
+                    'destino' => $destinoDir,
+                    'realpath' => realpath($destinoDir) ?: null,
+                    'is_dir' => is_dir($destinoDir),
+                    'is_writable' => is_writable($destinoDir),
+                    'php_sapi' => PHP_SAPI,
+                    'php_os' => PHP_OS,
+                    'user' => get_current_user(),
+                    'cwd' => getcwd(),
+                ];
+                $debugFile = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'image_optimizer_debug.log';
+                @file_put_contents($debugFile, json_encode($debug, JSON_PRETTY_PRINT) . "\n", FILE_APPEND | LOCK_EX);
+            } catch (\Throwable $e) {
+                // no-op: no queremos fallar por el logger
+            }
+
             return null;
         }
 
@@ -316,5 +336,48 @@ class ImageOptimizer
         $destino = rtrim($destinoDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $nombre;
 
         return move_uploaded_file($file['tmp_name'], $destino) ? $nombre : null;
+    }
+
+    /**
+     * Guarda el upload tal cual (sin convertir). Valida tamaño y MIME.
+     * Útil cuando la conversión a WebP no funciona en el servidor.
+     * Devuelve el nombre de archivo guardado o null si falla.
+     */
+    public static function saveUploadedRaw(array $file, string $destinoDir, string $prefijo = 'img_'): ?string
+    {
+        // Validaciones básicas similares a process()
+        $err = (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE);
+        if (empty($file) || $err !== UPLOAD_ERR_OK) {
+            self::$lastError = self::uploadErrorMessage($err);
+            return null;
+        }
+        if (($file['size'] ?? 0) > self::MAX_INPUT_SIZE) {
+            $maxMb = (int) (self::MAX_INPUT_SIZE / 1024 / 1024);
+            self::$lastError = "La imagen pesa más de {$maxMb} MB. Redúcela e intenta de nuevo.";
+            return null;
+        }
+        if (!is_uploaded_file($file['tmp_name'])) {
+            self::$lastError = 'Origen de archivo inválido.';
+            return null;
+        }
+
+        $mime = self::detectMime($file['tmp_name']);
+        if (!in_array($mime, ['image/jpeg', 'image/png', 'image/webp'], true)) {
+            self::$lastError = 'Formato no permitido. Usa JPG, PNG o WEBP.';
+            return null;
+        }
+
+        if (!is_dir($destinoDir)) @mkdir($destinoDir, 0755, true);
+        if (!is_dir($destinoDir) || !is_writable($destinoDir)) {
+            self::$lastError = 'No se pudo guardar la imagen: destino no disponible o no escribible.';
+            error_log('[ImageOptimizer::saveUploadedRaw] Destino no escribible: ' . $destinoDir);
+            return null;
+        }
+
+        $extension = strtolower(pathinfo($file['name'] ?? 'img.jpg', PATHINFO_EXTENSION)) ?: 'jpg';
+        $nombre  = uniqid($prefijo, true) . '.' . $extension;
+        $destino = rtrim($destinoDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $nombre;
+
+        return move_uploaded_file($file['tmp_name'], $destino) ? $nombre : (self::$lastError = 'No se pudo mover el archivo.', null);
     }
 }

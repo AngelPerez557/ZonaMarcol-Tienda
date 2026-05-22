@@ -154,6 +154,6 @@ class BannersController
     {
         $destino = BANNER_IMAGE_UPLOAD_DIR;
         if (!is_dir($destino)) mkdir($destino, 0755, true);
-        return ImageOptimizer::process($file, $destino, 'banner_');
+        return ImageOptimizer::saveUploadedRaw($file, $destino, 'banner_');
     }
 }

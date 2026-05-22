@@ -355,9 +355,10 @@ class ProductosController
     private function subirImagen(array $file, string $destino): ?string
     {
         $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'webp'];
-        // Toda la validación + conversión a WebP + redimensionado pasa por
-        // ImageOptimizer. Si falla, devuelve null y el flujo lo maneja arriba.
-        return ImageOptimizer::process($file, $destino, 'prod_');
+        // Para evitar problemas en servidores sin soporte WebP, usar un
+        // guardado directo del upload (sin conversión). ImageOptimizer
+        // mantiene la validación y un fallback consistente.
+        return ImageOptimizer::saveUploadedRaw($file, $destino, 'prod_');
     }
 
     // ─────────────────────────────────────────────

@@ -349,7 +349,7 @@ class UsuariosController
         $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'webp'];
         $destino = ROOT . 'Content' . DS . 'Demo' . DS . 'img' . DS . 'Usuarios' . DS;
         if (!is_dir($destino)) mkdir($destino, 0755, true);
-        return ImageOptimizer::process($file, $destino, 'usr_');
+        return ImageOptimizer::saveUploadedRaw($file, $destino, 'usr_');
     }
     // ─────────────────────────────────────────────
     // PERFIL — ver perfil propio

@@ -161,8 +161,8 @@
 
         /* ── FOOTER ── */
         .tienda-footer {
-            background: #3d3d3d;
-            color: #ccc;
+            background: linear-gradient(90deg, var(--rosa-dark), #2b2b2b);
+            color: #e6e0d3;
             padding: 40px 0 20px;
             margin-top: 60px;
         }
@@ -403,16 +403,19 @@
     <nav class="tienda-navbar">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
-                <a href="<?= APP_URL ?>Tienda" class="tienda-brand">
-                    <img src="<?= APP_URL ?>Content/Demo/img/zonamarcol_Logo.png"
-                         alt="<?= APP_NAME ?>"
-                         style="height:40px; width:auto; object-fit:contain; max-width:160px;">
-                </a>
+                         <a href="<?= APP_URL ?>Tienda" class="tienda-brand d-flex align-items-center" style="gap:8px;">
+                            <img src="<?= APP_URL ?>Content/Demo/img/zonamarcol_Logo.png"
+                                alt="<?= APP_NAME ?>" style="height:40px; width:auto; object-fit:contain; max-width:120px;">
+                            <img src="<?= APP_URL ?>Content/Demo/img/zonamarcol_Letras.png"
+                                alt="<?= APP_NAME ?>" style="height:28px; width:auto; object-fit:contain; max-width:140px;">
+                         </a>
 
                 <?php
                 $urlActual = strtolower(trim($_GET['url'] ?? '', '/'));
-                $esInicio   = $urlActual === 'tienda' || $urlActual === 'tienda/index' || $urlActual === '';
-                $esCatalogo = str_starts_with($urlActual, 'tienda/catalogo') || str_starts_with($urlActual, 'tienda/producto');
+                $esInicio      = $urlActual === 'tienda' || $urlActual === 'tienda/index' || $urlActual === '';
+                $esCatalogo    = str_starts_with($urlActual, 'tienda/catalogo') || str_starts_with($urlActual, 'tienda/producto');
+                $esServicios   = str_starts_with($urlActual, 'tienda/servicio') || str_starts_with($urlActual, 'tienda/servicios');
+                $esEquipaciones= str_starts_with($urlActual, 'tienda/equipac') || str_starts_with($urlActual, 'tienda/equipacion') || str_starts_with($urlActual, 'tienda/equipaciones');
                 ?>
                 <ul class="nav nav-tienda d-none d-md-flex align-items-center">
                     <li class="nav-item">
@@ -420,6 +423,12 @@
                     </li>
                     <li class="nav-item">
                         <a href="<?= APP_URL ?>Tienda/catalogo" class="nav-link <?= $esCatalogo ? 'active' : '' ?>">Catálogo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= APP_URL ?>Tienda/servicios" class="nav-link <?= $esServicios ? 'active' : '' ?>">Servicios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= APP_URL ?>Tienda/equipaciones" class="nav-link <?= $esEquipaciones ? 'active' : '' ?>">Camisetas</a>
                     </li>
                 </ul>
 
@@ -461,8 +470,10 @@
 
             <div class="collapse d-md-none mt-2" id="menuMobile">
                 <ul class="nav flex-column">
-                    <li><a href="<?= APP_URL ?>Tienda/index"    class="nav-link <?= $esInicio   ? 'active' : '' ?>">Inicio</a></li>
-                    <li><a href="<?= APP_URL ?>Tienda/catalogo" class="nav-link <?= $esCatalogo ? 'active' : '' ?>">Catálogo</a></li>
+                    <li><a href="<?= APP_URL ?>Tienda/index"        class="nav-link <?= $esInicio       ? 'active' : '' ?>">Inicio</a></li>
+                    <li><a href="<?= APP_URL ?>Tienda/catalogo"     class="nav-link <?= $esCatalogo     ? 'active' : '' ?>">Catálogo</a></li>
+                    <li><a href="<?= APP_URL ?>Tienda/servicios"    class="nav-link <?= $esServicios    ? 'active' : '' ?>">Servicios</a></li>
+                    <li><a href="<?= APP_URL ?>Tienda/equipaciones" class="nav-link <?= $esEquipaciones ? 'active' : '' ?>">Camisetas</a></li>
                 </ul>
             </div>
         </div>

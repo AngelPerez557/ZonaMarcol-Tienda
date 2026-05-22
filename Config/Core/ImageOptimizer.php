@@ -378,6 +378,10 @@ class ImageOptimizer
         $nombre  = uniqid($prefijo, true) . '.' . $extension;
         $destino = rtrim($destinoDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $nombre;
 
-        return move_uploaded_file($file['tmp_name'], $destino) ? $nombre : (self::$lastError = 'No se pudo mover el archivo.', null);
+        if (move_uploaded_file($file['tmp_name'], $destino)) {
+            return $nombre;
+        }
+        self::$lastError = 'No se pudo mover el archivo.';
+        return null;
     }
 }

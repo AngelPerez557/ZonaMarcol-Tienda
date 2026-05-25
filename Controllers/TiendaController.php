@@ -389,6 +389,13 @@ class TiendaController
             header('Location: ' . APP_URL . 'Tienda/login'); exit();
         }
 
+        // Validación CSRF — el formulario de login ya envía csrf_token.
+        // Se valida ANTES del rate limiter para no gastar intentos con
+        // peticiones forjadas. Cierra el hueco de "login CSRF".
+        if (!Csrf::validate()) {
+            header('Location: ' . APP_URL . 'Tienda/login?error=csrf'); exit();
+        }
+
         $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
         if (!RateLimiter::check($ip)) {
             $minutos = RateLimiter::minutosRestantes($ip);
@@ -584,6 +591,12 @@ public function cambiarPassword(): void
 
         if (empty($_SESSION['cliente'])) {
             echo json_encode(['error' => 'no_auth']);
+            exit();
+        }
+
+        // Validación CSRF — el JS de favoritos envía csrf_token.
+        if (!Csrf::validate()) {
+            echo json_encode(['error' => 'csrf']);
             exit();
         }
 

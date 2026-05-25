@@ -42,8 +42,9 @@ $menu = [
     ]],
 
     // Servicio Técnico — taller de reparación. Los hijos se agregan por etapa.
-    'Servicio' => ['Id'=>14,'Nombre'=>'Servicio Técnico','Url'=>'#','Icono'=>'fas fa-wrench','Permiso'=>'servicio.catalogo','Children'=>[
-        ['Id'=>141,'Nombre'=>'Catálogo de servicios','Url'=>APP_URL.'Servicios/index','Icono'=>'fas fa-clipboard-list','Permiso'=>'servicio.catalogo'],
+    'Servicio' => ['Id'=>14,'Nombre'=>'Servicio Técnico','Url'=>'#','Icono'=>'fas fa-wrench','Permiso'=>'servicio.ver','Children'=>[
+        ['Id'=>141,'Nombre'=>'Órdenes de servicio',  'Url'=>APP_URL.'Ordenes/index',  'Icono'=>'fas fa-clipboard-check','Permiso'=>'servicio.ver'],
+        ['Id'=>142,'Nombre'=>'Catálogo de servicios','Url'=>APP_URL.'Servicios/index','Icono'=>'fas fa-clipboard-list', 'Permiso'=>'servicio.catalogo'],
     ]],
 
     'Clientes' => ['Id'=>6,'Nombre'=>'Clientes','Url'=>APP_URL.'Clientes/index','Icono'=>'fas fa-users','Permiso'=>'clientes.ver'],

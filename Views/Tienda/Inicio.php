@@ -51,7 +51,7 @@ if (!function_exists('calcDesc')) {
     <?php endif; ?>
 </div>
 <?php else: ?>
-<div style="background:linear-gradient(135deg,#FFF1C8 0%,#FFFBF2 100%);padding:clamp(40px,8vw,80px) 0;text-align:center;">
+<div style="background:linear-gradient(135deg,#222222 0%,#1a1a1a 100%);padding:clamp(40px,8vw,80px) 0;text-align:center;">
     <div class="container">
         <h1 class="fw-bold mb-3" style="color:#F5A800;">Zona Marcol</h1>
         <p class="text-muted mb-4">Cosméticos masculinos, tecnología y servicio técnico</p>

@@ -37,4 +37,61 @@ class TemporadaModel extends BaseModel
     {
         $this->callSPExecute('sp_temporadas_cerrarVencidas');
     }
+
+    // ─────────────────────────────────────────────
+    // ESCRITURA — prepared statements directos (no hay SP de write).
+    // MVC estricto: el SQL vive solo aquí.
+    // ─────────────────────────────────────────────
+
+    public function insert(array $d): int
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                "INSERT INTO temporadas (nombre, anio_inicio, anio_fin, activo)
+                 VALUES (?, ?, ?, 1)"
+            );
+            $stmt->execute([
+                $d['nombre'],
+                (int) $d['anio_inicio'],
+                (int) $d['anio_fin'],
+            ]);
+            return (int) $this->pdo->lastInsertId();
+        } catch (\PDOException $e) {
+            error_log('[TemporadaModel::insert] ' . $e->getMessage());
+            return 0;
+        }
+    }
+
+    public function update(array $d): bool
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                "UPDATE temporadas SET nombre = ?, anio_inicio = ?, anio_fin = ? WHERE id = ?"
+            );
+            return $stmt->execute([
+                $d['nombre'],
+                (int) $d['anio_inicio'],
+                (int) $d['anio_fin'],
+                (int) $d['id'],
+            ]);
+        } catch (\PDOException $e) {
+            error_log('[TemporadaModel::update] ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Activar/desactivar. Soft-delete: las temporadas están referenciadas
+     * por equipaciones y pedidos_camiseta — borrado físico rompería historial.
+     */
+    public function toggleActivo(int $id, int $activo): bool
+    {
+        try {
+            $stmt = $this->pdo->prepare("UPDATE temporadas SET activo = ? WHERE id = ?");
+            return $stmt->execute([$activo, $id]);
+        } catch (\PDOException $e) {
+            error_log('[TemporadaModel::toggleActivo] ' . $e->getMessage());
+            return false;
+        }
+    }
 }

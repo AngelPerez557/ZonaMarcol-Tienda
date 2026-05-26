@@ -11,6 +11,11 @@ class TiendaController
     private NotificacionModel $notifModel;
     private VentaModel        $ventaModel;
     private FavoritoModel     $favoritoModel;
+    private ServicioCatalogoModel $servicioModel;
+    private EquipacionModel       $equipacionModel;
+    private TorneoModel           $torneoModel;
+    private EquipoModel           $equipoModel;
+    private CamisetaCatalogoModel $catalogoCamiseta;
 
 
     public function __construct()
@@ -24,6 +29,68 @@ class TiendaController
         $this->notifModel     = new NotificacionModel();
         $this->ventaModel     = new VentaModel();
         $this->favoritoModel  = new FavoritoModel();
+        $this->servicioModel    = new ServicioCatalogoModel();
+        $this->equipacionModel  = new EquipacionModel();
+        $this->torneoModel      = new TorneoModel();
+        $this->equipoModel      = new EquipoModel();
+        $this->catalogoCamiseta = new CamisetaCatalogoModel();
+    }
+
+    // ─────────────────────────────────────────────
+    // CONFIGURADOR DE CAMISETA — Stage 1
+    // URL: /Tienda/configurador/{equipacionId}
+    // El cliente arma su camiseta (talla, nombre, número, parche) y envía
+    // el pedido detallado por WhatsApp. La creación en BD con comprobante
+    // de transferencia es la Stage 2 — irá en su propia iteración.
+    // ─────────────────────────────────────────────
+    public function configurador(string $id = ''): void
+    {
+        $equipacionId = (int) $id;
+        if (!$equipacionId) {
+            header('Location: ' . APP_URL . 'Tienda/camisetas');
+            exit();
+        }
+
+        $equipacion = $this->equipacionModel->findById($equipacionId);
+        if (!$equipacion->Found || !$equipacion->isActivo()) {
+            header('Location: ' . APP_URL . 'Tienda/camisetas');
+            exit();
+        }
+
+        // Tallas válidas para esta versión (hombre/mujer/infantil).
+        $tallas = $this->catalogoCamiseta->tallasPorVersion((string) $equipacion->version);
+        // Parches disponibles para el equipo (sus competiciones).
+        $competiciones = $this->equipoModel->findCompeticiones((int) $equipacion->equipo_id);
+        // Precios extras (nombre, número, parche) — alimentan el cálculo del total.
+        $extras = $this->catalogoCamiseta->preciosExtras();
+
+        $pageTitle = 'Configurar camiseta';
+        $this->render('Configurador.php', compact(
+            'pageTitle', 'equipacion', 'tallas', 'competiciones', 'extras'
+        ));
+    }
+
+    // ─────────────────────────────────────────────
+    // SERVICIOS — catálogo público de servicio técnico
+    // URL: /Tienda/servicios
+    // ─────────────────────────────────────────────
+    public function servicios(): void
+    {
+        $pageTitle = 'Servicios Técnicos';
+        $servicios = $this->servicioModel->findActivos();
+        $this->render('Servicios.php', compact('pageTitle', 'servicios'));
+    }
+
+    // ─────────────────────────────────────────────
+    // CAMISETAS — catálogo público de camisetas deportivas
+    // URL: /Tienda/camisetas
+    // ─────────────────────────────────────────────
+    public function camisetas(): void
+    {
+        $pageTitle    = 'Camisetas';
+        $equipaciones = $this->equipacionModel->findAll();
+        $torneos      = $this->torneoModel->findActivos();
+        $this->render('Camisetas.php', compact('pageTitle', 'equipaciones', 'torneos'));
     }
 
    public function index(): void

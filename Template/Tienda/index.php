@@ -414,8 +414,10 @@
 
                 <?php
                 $urlActual = strtolower(trim($_GET['url'] ?? '', '/'));
-                $esInicio   = $urlActual === 'tienda' || $urlActual === 'tienda/index' || $urlActual === '';
-                $esCatalogo = str_starts_with($urlActual, 'tienda/catalogo') || str_starts_with($urlActual, 'tienda/producto');
+                $esInicio    = $urlActual === 'tienda' || $urlActual === 'tienda/index' || $urlActual === '';
+                $esCatalogo  = str_starts_with($urlActual, 'tienda/catalogo') || str_starts_with($urlActual, 'tienda/producto');
+                $esServicios = str_starts_with($urlActual, 'tienda/servicios');
+                $esCamisetas = str_starts_with($urlActual, 'tienda/camisetas');
                 ?>
                 <ul class="nav nav-tienda d-none d-md-flex align-items-center">
                     <li class="nav-item">
@@ -423,6 +425,12 @@
                     </li>
                     <li class="nav-item">
                         <a href="<?= APP_URL ?>Tienda/catalogo" class="nav-link <?= $esCatalogo ? 'active' : '' ?>">Catálogo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= APP_URL ?>Tienda/servicios" class="nav-link <?= $esServicios ? 'active' : '' ?>">Servicios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= APP_URL ?>Tienda/camisetas" class="nav-link <?= $esCamisetas ? 'active' : '' ?>">Camisetas</a>
                     </li>
                 </ul>
 
@@ -464,8 +472,10 @@
 
             <div class="collapse d-md-none mt-2" id="menuMobile">
                 <ul class="nav flex-column">
-                    <li><a href="<?= APP_URL ?>Tienda/index"    class="nav-link <?= $esInicio   ? 'active' : '' ?>">Inicio</a></li>
-                    <li><a href="<?= APP_URL ?>Tienda/catalogo" class="nav-link <?= $esCatalogo ? 'active' : '' ?>">Catálogo</a></li>
+                    <li><a href="<?= APP_URL ?>Tienda/index"     class="nav-link <?= $esInicio    ? 'active' : '' ?>">Inicio</a></li>
+                    <li><a href="<?= APP_URL ?>Tienda/catalogo"  class="nav-link <?= $esCatalogo  ? 'active' : '' ?>">Catálogo</a></li>
+                    <li><a href="<?= APP_URL ?>Tienda/servicios" class="nav-link <?= $esServicios ? 'active' : '' ?>">Servicios</a></li>
+                    <li><a href="<?= APP_URL ?>Tienda/camisetas" class="nav-link <?= $esCamisetas ? 'active' : '' ?>">Camisetas</a></li>
                 </ul>
             </div>
         </div>

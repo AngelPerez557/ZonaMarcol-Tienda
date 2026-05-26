@@ -510,12 +510,12 @@
                     <h6 class="text-white mb-3">Contacto</h6>
                     <ul class="list-unstyled" style="font-size:0.85rem;">
                         <li>
-                            <a href="https://wa.me/50499873125" target="_blank" style="color:#ccc; text-decoration:none;">
-                                <i class="fab fa-whatsapp me-2" style="color:#25d366;"></i>+(504) 9987-3125
+                            <a href="https://wa.me/50497141775" target="_blank" style="color:#ccc; text-decoration:none;">
+                                <i class="fab fa-whatsapp me-2" style="color:#25d366;"></i>+(504) 9714-1775
                             </a>
                         </li>
                         <li class="mt-2">
-                            <a href="https://www.instagram.com/zonamarcol" target="_blank"
+                            <a href="https://www.instagram.com/zona_marcol" target="_blank"
                                style="color:#ccc; text-decoration:none; word-break:break-word;">
                                 <i class="fab fa-instagram me-2" style="color:#F5A800;"></i>@zonamarcol
                             </a>
@@ -536,8 +536,8 @@
                         Desarrollado por
                         <a href="https://www.instagram.com/deskcod_" target="_blank" style="color:#F5A800;">DeskCod</a>
                         <br>
-                        <a href="https://wa.me/50493429640" target="_blank" style="color:#ccc; text-decoration:none; font-size:0.78rem;">
-                            <i class="fab fa-whatsapp me-1" style="color:#25d366;"></i>+(504) 9342-9640
+                        <a href="https://wa.me/50493429641" target="_blank" style="color:#ccc; text-decoration:none; font-size:0.78rem;">
+                            <i class="fab fa-whatsapp me-1" style="color:#25d366;"></i>+(504) 9342-9641
                         </a>
                         <br>
                         <a href="https://www.instagram.com/deskcod_" target="_blank" style="color:#ccc; text-decoration:none; font-size:0.78rem;">
@@ -689,4 +689,4 @@
 
     {JSCRIPTS}
 </body>
-</html>                                  
+</html>

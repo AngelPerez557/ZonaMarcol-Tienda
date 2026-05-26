@@ -78,7 +78,7 @@ define('APP_LOCALE',  'es_HN');
 // Número centralizado — único lugar para cambiar
 // Formato internacional sin + ni espacios
 // ─────────────────────────────────────────────
-define('WA_NUMBER', getenv('WA_NUMBER') ?: '50499873125');
+define('WA_NUMBER', getenv('WA_NUMBER') ?: '50497141775');
 
 // ─────────────────────────────────────────────
 // 8. CONFIGURACIÓN DE SESIÓN

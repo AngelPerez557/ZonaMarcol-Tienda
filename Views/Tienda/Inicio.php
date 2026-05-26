@@ -159,6 +159,85 @@ if (!function_exists('calcDesc')) {
     <?php endif; ?>
 </div>
 
+<!-- ─── CAMISETAS DESTACADAS ──────────────────── -->
+<?php if (!empty($equipacionesDestacadas)): ?>
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 style="color:#fff;font-weight:800;margin:0;">
+            <i class="fas fa-tshirt me-2" style="color:#F5A800;"></i>Camisetas
+        </h3>
+        <a href="<?= APP_URL ?>Tienda/camisetas"
+           style="color:#F5A800;font-size:0.85rem;text-decoration:none;font-weight:600;">
+            Ver todas <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+    <div class="row g-3">
+        <?php foreach ($equipacionesDestacadas as $eq): ?>
+        <div class="col-6 col-md-3">
+            <a href="<?= APP_URL ?>Tienda/configurador/<?= (int) $eq->id ?>" style="text-decoration:none;">
+            <div style="background:#222222;border:1px solid #333333;border-radius:12px;
+                        overflow:hidden;transition:transform 0.2s,border-color 0.2s;">
+                <div style="height:150px;background:#1a1a1a;
+                            background-image:url('<?= htmlspecialchars($eq->getImagenUrl()) ?>');
+                            background-size:contain;background-position:center;
+                            background-repeat:no-repeat;"></div>
+                <div style="padding:10px 12px;">
+                    <div style="color:#F5A800;font-size:0.68rem;font-weight:700;
+                                letter-spacing:0.4px;text-transform:uppercase;">
+                        <?= htmlspecialchars($eq->torneo_nombre ?: 'Liga') ?>
+                    </div>
+                    <div style="color:#e6e6e6;font-size:0.9rem;font-weight:700;margin:3px 0 4px;">
+                        <?= htmlspecialchars($eq->equipo_nombre ?: 'Equipo') ?>
+                    </div>
+                    <div style="color:#F5A800;font-weight:800;font-size:0.95rem;">
+                        <?= htmlspecialchars($eq->getPrecioFormateado()) ?>
+                    </div>
+                </div>
+            </div>
+            </a>
+        </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php endif; ?>
+
+<!-- ─── SERVICIOS TÉCNICOS DESTACADOS ─────────── -->
+<?php if (!empty($serviciosDestacados)): ?>
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 style="color:#fff;font-weight:800;margin:0;">
+            <i class="fas fa-wrench me-2" style="color:#F5A800;"></i>Servicio Técnico
+        </h3>
+        <a href="<?= APP_URL ?>Tienda/servicios"
+           style="color:#F5A800;font-size:0.85rem;text-decoration:none;font-weight:600;">
+            Ver todos <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+    <div class="row g-3">
+        <?php foreach ($serviciosDestacados as $s): ?>
+        <div class="col-6 col-md-3">
+            <a href="<?= APP_URL ?>Tienda/servicios" style="text-decoration:none;">
+            <div style="background:#222222;border:1px solid #333333;border-radius:12px;
+                        padding:16px;height:100%;display:flex;flex-direction:column;">
+                <div style="color:#F5A800;font-size:0.68rem;font-weight:700;
+                            letter-spacing:0.4px;text-transform:uppercase;margin-bottom:6px;">
+                    <?= htmlspecialchars($s->getCategoriaLabel()) ?>
+                </div>
+                <div style="color:#e6e6e6;font-size:0.95rem;font-weight:700;
+                            margin-bottom:10px;line-height:1.3;flex:1;">
+                    <?= htmlspecialchars($s->nombre) ?>
+                </div>
+                <div style="color:#F5A800;font-weight:800;font-size:1rem;">
+                    <?= htmlspecialchars($s->getPrecioFormateado()) ?>
+                </div>
+            </div>
+            </a>
+        </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- ─── CTA TIENDA + SERVICIO TÉCNICO ─────────── -->
 <div class="container my-5">
     <div class="card border-0 text-center p-5"

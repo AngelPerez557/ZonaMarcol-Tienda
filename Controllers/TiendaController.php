@@ -90,6 +90,23 @@ class TiendaController
         $pageTitle    = 'Camisetas';
         $equipaciones = $this->equipacionModel->findAll();
         $torneos      = $this->torneoModel->findActivos();
+
+        // El SP sp_equipaciones_findAll no siempre devuelve los JOINs
+        // (torneo_nombre, equipo_nombre, escudo_path). Sin eso, el filtro
+        // por liga no matchea contra los chips. Lo poblamos con UNA sola
+        // consulta a equipos + map en memoria (evita N+1).
+        $mapEquipos = [];
+        foreach ($this->equipoModel->findAll() as $e) {
+            $mapEquipos[(int) $e->id] = $e;
+        }
+        foreach ($equipaciones as $eq) {
+            $eid = (int) $eq->equipo_id;
+            if (!isset($mapEquipos[$eid])) continue;
+            $eq->equipo_nombre = $eq->equipo_nombre ?: $mapEquipos[$eid]->nombre;
+            $eq->torneo_nombre = $eq->torneo_nombre ?: ($mapEquipos[$eid]->torneo_nombre ?? '');
+            $eq->escudo_path   = $eq->escudo_path   ?: ($mapEquipos[$eid]->escudo_path ?? null);
+        }
+
         $this->render('Camisetas.php', compact('pageTitle', 'equipaciones', 'torneos'));
     }
 
@@ -114,9 +131,29 @@ class TiendaController
             );
         }
 
+        // Destacados de Servicio Técnico y Camisetas para mostrar en Inicio.
+        $serviciosDestacados    = array_slice($this->servicioModel->findActivos(), 0, 4);
+        $equipacionesDestacadas = array_slice(
+            array_values(array_filter($this->equipacionModel->findAll(), fn($e) => $e->isActivo())),
+            0, 4
+        );
+        if (!empty($equipacionesDestacadas)) {
+            $mapEquipos = [];
+            foreach ($this->equipoModel->findAll() as $e) {
+                $mapEquipos[(int) $e->id] = $e;
+            }
+            foreach ($equipacionesDestacadas as $eq) {
+                $eid = (int) $eq->equipo_id;
+                if (!isset($mapEquipos[$eid])) continue;
+                $eq->equipo_nombre = $eq->equipo_nombre ?: $mapEquipos[$eid]->nombre;
+                $eq->torneo_nombre = $eq->torneo_nombre ?: ($mapEquipos[$eid]->torneo_nombre ?? '');
+            }
+        }
+
         $this->render('Inicio.php', compact(
             'pageTitle','banners','productosDestacados',
-            'categorias','descuentoActivo','favoritosIds'
+            'categorias','descuentoActivo','favoritosIds',
+            'serviciosDestacados','equipacionesDestacadas'
         ));
     }
     public function catalogo(string $catId = ''): void

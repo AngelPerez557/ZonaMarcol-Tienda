@@ -39,6 +39,7 @@ $menu = [
         ['Id'=>132,'Nombre'=>'Equipos',       'Url'=>APP_URL.'Equipos/index',       'Icono'=>'fas fa-shield-alt', 'Permiso'=>'camisetas.catalogo'],
         ['Id'=>133,'Nombre'=>'Competiciones', 'Url'=>APP_URL.'Competiciones/index', 'Icono'=>'fas fa-medal',      'Permiso'=>'camisetas.catalogo'],
         ['Id'=>134,'Nombre'=>'Equipaciones',  'Url'=>APP_URL.'Equipaciones/index',  'Icono'=>'fas fa-tshirt',     'Permiso'=>'camisetas.catalogo'],
+        ['Id'=>135,'Nombre'=>'Catálogos',     'Url'=>APP_URL.'Catalogos/index',     'Icono'=>'fas fa-layer-group','Permiso'=>'camisetas.catalogo'],
     ]],
 
     // Servicio Técnico — taller de reparación. Los hijos se agregan por etapa.

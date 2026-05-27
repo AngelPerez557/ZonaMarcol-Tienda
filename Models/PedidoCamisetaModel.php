@@ -83,4 +83,23 @@ class PedidoCamisetaModel extends BaseModel
     {
         return $this->callSP('sp_pedidos_camiseta_exportar', [$temporadaId]);
     }
+
+    /**
+     * Guarda la ruta del comprobante de transferencia que sube el cliente
+     * al hacer el pedido online. La columna se agregó en la migración
+     * `zonamarcol_ronda_b_pedidos_online.sql`. Prepared statement directo
+     * porque no hay SP dedicado para esto.
+     */
+    public function updateComprobante(int $id, string $path): bool
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                "UPDATE pedidos_camiseta SET comprobante_path = ? WHERE id = ?"
+            );
+            return $stmt->execute([$path, $id]);
+        } catch (\PDOException $e) {
+            error_log('[PedidoCamisetaModel::updateComprobante] ' . $e->getMessage());
+            return false;
+        }
+    }
 }

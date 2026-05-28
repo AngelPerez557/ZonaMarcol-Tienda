@@ -17,6 +17,7 @@ class PedidoCamisetaEntity extends BaseEntity
     public ?float  $saldo           = 0.00;
     public ?string $exportado_at    = null;
     public ?string $nota            = null;
+    public ?string $comprobante_path = null;   // Ronda B — comprobante de transferencia
     public ?string $created_at      = null;
     public ?string $updated_at      = null;
 

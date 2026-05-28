@@ -78,14 +78,17 @@ CREATE TABLE IF NOT EXISTS `solicitudes_servicio` (
 -- ─────────────────────────────────────────────
 INSERT IGNORE INTO `permissions` (`nombre`, `slug`, `modulo`, `descripcion`) VALUES
     ('Gestionar solicitudes de servicio', 'servicio.solicitudes', 'servicio',
-     'Ver y atender las solicitudes online de servicio técnico');
+     'Ver y atender las solicitudes online de servicio técnico'),
+    ('Gestionar pedidos de camisetas',    'camisetas.pedidos',    'camisetas',
+     'Ver y gestionar pedidos online de camisetas (workflow + comprobantes)');
 
 -- Asignar al admin
 INSERT IGNORE INTO `rol_permisos` (`rol_id`, `permission_id`)
 SELECT r.`id`, p.`id`
 FROM `roles` r
 CROSS JOIN `permissions` p
-WHERE r.`slug` = 'admin' AND p.`slug` = 'servicio.solicitudes';
+WHERE r.`slug` = 'admin'
+  AND p.`slug` IN ('servicio.solicitudes', 'camisetas.pedidos');
 
 -- ─────────────────────────────────────────────
 -- Verificación

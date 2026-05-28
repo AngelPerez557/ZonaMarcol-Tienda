@@ -999,5 +999,67 @@ public function cambiarPassword(): void
         exit();
     }
 
-    
+    // ─────────────────────────────────────────────
+    // RONDA B — Vistas del cliente sobre lo que mandó online
+    // ─────────────────────────────────────────────
+
+    /**
+     * Lista los pedidos de camisetas del cliente autenticado.
+     * URL: /Tienda/misPedidosCamiseta
+     */
+    public function misPedidosCamiseta(): void
+    {
+        $this->requireCliente();
+        $pageTitle = 'Mis Pedidos de Camisetas';
+        $pedidos   = $this->pedidoCamisetaModel->findByCliente(
+            (int) $_SESSION['cliente']['id']
+        );
+        $this->render('MisPedidosCamiseta.php', compact('pageTitle', 'pedidos'));
+    }
+
+    /**
+     * Detalle de un pedido de camiseta del propio cliente.
+     * Doble guard: requireCliente + verificación de propiedad
+     * (cliente_id == sesión). Sin esto, conociendo el ID se podrían
+     * espiar pedidos ajenos.
+     * URL: /Tienda/verPedidoCamiseta/{id}
+     */
+    public function verPedidoCamiseta(string $id = ''): void
+    {
+        $this->requireCliente();
+
+        if (!is_numeric($id) || (int) $id <= 0) {
+            header('Location: ' . APP_URL . 'Tienda/misPedidosCamiseta'); exit();
+        }
+
+        $pedido = $this->pedidoCamisetaModel->findById((int) $id);
+        $miId   = (int) $_SESSION['cliente']['id'];
+
+        if (!$pedido->Found || (int) $pedido->cliente_id !== $miId) {
+            // Tratamos pedido ajeno como inexistente — no filtra info.
+            $_SESSION['alert'] = [
+                'icon' => 'error', 'title' => 'No encontrado',
+                'text' => 'No encontramos ese pedido en tu cuenta.',
+            ];
+            header('Location: ' . APP_URL . 'Tienda/misPedidosCamiseta'); exit();
+        }
+
+        $detalle = $this->pedidoCamisetaModel->findDetalle((int) $id);
+        $pageTitle = 'Pedido ' . $pedido->getCodigoFormateado();
+        $this->render('VerPedidoCamiseta.php', compact('pageTitle', 'pedido', 'detalle'));
+    }
+
+    /**
+     * Lista las solicitudes de servicio técnico del cliente autenticado.
+     * URL: /Tienda/misSolicitudes
+     */
+    public function misSolicitudes(): void
+    {
+        $this->requireCliente();
+        $pageTitle   = 'Mis Solicitudes de Servicio';
+        $solicitudes = $this->solicitudServicioModel->findByCliente(
+            (int) $_SESSION['cliente']['id']
+        );
+        $this->render('MisSolicitudes.php', compact('pageTitle', 'solicitudes'));
+    }
 }

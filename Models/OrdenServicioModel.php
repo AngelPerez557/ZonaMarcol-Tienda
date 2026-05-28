@@ -212,4 +212,191 @@ class OrdenServicioModel extends BaseModel
             return false;
         }
     }
+
+    // ─────────────────────────────────────────────
+    // ETAPA 3 — WORKFLOW DE LA ORDEN
+    // ─────────────────────────────────────────────
+
+    /** Transiciones legales — usado por cambiarEstado() y por el controller. */
+    public const TRANSICIONES = [
+        'Recibido'             => ['Diagnostico', 'Cancelado'],
+        'Diagnostico'          => ['Esperando aprobacion', 'Cancelado'],
+        'Esperando aprobacion' => ['En reparacion', 'Cancelado'],
+        'En reparacion'        => ['Listo', 'Cancelado'],
+        'Listo'                => ['Entregado', 'Cancelado'],
+        'Entregado'            => [],   // estado terminal
+        'Cancelado'            => [],   // estado terminal
+    ];
+
+    /**
+     * Cambia el estado de una orden. Valida la transición contra la
+     * whitelist y deja registro en `servicio_historial`. Transaccional:
+     * o se actualizan los dos rows, o nada.
+     */
+    public function cambiarEstado(int $ordenId, string $nuevo, ?string $motivo, int $userId): bool
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                "SELECT estado, saldo FROM ordenes_servicio WHERE id = ? LIMIT 1"
+            );
+            $stmt->execute([$ordenId]);
+            $row = $stmt->fetch();
+            if (!$row) return false;
+
+            $anterior = (string) $row['estado'];
+            $legales  = self::TRANSICIONES[$anterior] ?? [];
+            if (!in_array($nuevo, $legales, true)) {
+                return false;
+            }
+
+            // Guard de Etapa 4: no se entrega con saldo pendiente.
+            if ($nuevo === 'Entregado' && (float) $row['saldo'] > 0.009) {
+                return false;
+            }
+
+            $this->beginTransaction();
+
+            // Para Cancelado guardamos el motivo en la propia orden y se
+            // fija fecha_entrega = NULL. Para Entregado fijamos fecha_entrega.
+            if ($nuevo === 'Cancelado') {
+                $up = $this->pdo->prepare(
+                    "UPDATE ordenes_servicio
+                        SET estado = ?, motivo_cancelacion = ?
+                      WHERE id = ?"
+                );
+                $up->execute([$nuevo, $motivo ?: null, $ordenId]);
+            } elseif ($nuevo === 'Entregado') {
+                $up = $this->pdo->prepare(
+                    "UPDATE ordenes_servicio
+                        SET estado = ?, fecha_entrega = CURRENT_TIMESTAMP
+                      WHERE id = ?"
+                );
+                $up->execute([$nuevo, $ordenId]);
+            } else {
+                $up = $this->pdo->prepare(
+                    "UPDATE ordenes_servicio SET estado = ? WHERE id = ?"
+                );
+                $up->execute([$nuevo, $ordenId]);
+            }
+
+            $hist = $this->pdo->prepare(
+                "INSERT INTO servicio_historial
+                    (orden_id, estado_anterior, estado_nuevo, motivo, user_id)
+                 VALUES (?, ?, ?, ?, ?)"
+            );
+            $hist->execute([$ordenId, $anterior, $nuevo, $motivo ?: null, $userId]);
+
+            $this->commit();
+            return true;
+        } catch (\PDOException $e) {
+            $this->rollback();
+            error_log('[OrdenServicioModel::cambiarEstado] ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Recalcula `total_actual` y `saldo` a partir de los items.
+     * Por convención: total = suma de TODOS los items (aprobados o no).
+     * El criterio de cobrar solo aprobados se aplica en caja (Etapa 4).
+     */
+    public function recalcularTotal(int $ordenId): bool
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                "UPDATE ordenes_servicio os
+                    SET total_actual = (
+                            SELECT COALESCE(SUM(subtotal), 0)
+                              FROM orden_servicio_items
+                             WHERE orden_id = os.id
+                        ),
+                        saldo = (
+                            SELECT COALESCE(SUM(subtotal), 0)
+                              FROM orden_servicio_items
+                             WHERE orden_id = os.id
+                        ) - total_pagado
+                  WHERE os.id = ?"
+            );
+            return $stmt->execute([$ordenId]);
+        } catch (\PDOException $e) {
+            error_log('[OrdenServicioModel::recalcularTotal] ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /** Histórico de cambios de estado, más reciente primero. */
+    public function findHistorial(int $ordenId): array
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                "SELECT sh.*, u.nombre AS user_nombre
+                   FROM servicio_historial sh
+                   JOIN users u ON u.id = sh.user_id
+                  WHERE sh.orden_id = ?
+                  ORDER BY sh.fecha DESC, sh.id DESC"
+            );
+            $stmt->execute([$ordenId]);
+            return $stmt->fetchAll();
+        } catch (\PDOException $e) {
+            error_log('[OrdenServicioModel::findHistorial] ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /** Actualiza solo el diagnóstico técnico — separado del update general. */
+    public function actualizarDiagnostico(int $ordenId, string $diagnostico): bool
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                "UPDATE ordenes_servicio SET diagnostico_inicial = ? WHERE id = ?"
+            );
+            return $stmt->execute([$diagnostico ?: null, $ordenId]);
+        } catch (\PDOException $e) {
+            error_log('[OrdenServicioModel::actualizarDiagnostico] ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Recalcula `total_pagado` y `saldo` a partir de orden_servicio_pagos.
+     * Atómica: una sola consulta. La llama el controller después de cada
+     * insert/delete de pago.
+     */
+    public function recalcularPagado(int $ordenId): bool
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                "UPDATE ordenes_servicio os
+                    SET total_pagado = (
+                            SELECT COALESCE(SUM(monto), 0)
+                              FROM orden_servicio_pagos
+                             WHERE orden_id = os.id
+                        ),
+                        saldo = total_actual - (
+                            SELECT COALESCE(SUM(monto), 0)
+                              FROM orden_servicio_pagos
+                             WHERE orden_id = os.id
+                        )
+                  WHERE os.id = ?"
+            );
+            return $stmt->execute([$ordenId]);
+        } catch (\PDOException $e) {
+            error_log('[OrdenServicioModel::recalcularPagado] ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /** Asigna o cambia el técnico responsable. */
+    public function asignarTecnico(int $ordenId, ?int $tecnicoId): bool
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                "UPDATE ordenes_servicio SET tecnico_id = ? WHERE id = ?"
+            );
+            return $stmt->execute([$tecnicoId ?: null, $ordenId]);
+        } catch (\PDOException $e) {
+            error_log('[OrdenServicioModel::asignarTecnico] ' . $e->getMessage());
+            return false;
+        }
+    }
 }

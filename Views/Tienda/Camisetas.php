@@ -37,9 +37,14 @@ $activas = array_filter($equipaciones, fn($e) => $e->isActivo());
         <button type="button" class="cm-filtro cm-liga on" data-liga="">Todas las ligas</button>
         <?php foreach ($torneos as $t): ?>
         <button type="button" class="cm-filtro cm-liga" data-liga="<?= htmlspecialchars($t->nombre) ?>">
+            <?php if (!empty($t->logo_path)): ?>
             <img src="<?= htmlspecialchars($t->getLogoUrl()) ?>" alt=""
                  style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:6px;
-                        background:#fff;border-radius:4px;padding:1px;">
+                        background:#fff;border-radius:4px;padding:1px;"
+                 onerror="this.style.display='none';">
+            <?php else: ?>
+            <i class="fas fa-trophy" style="font-size:0.8rem;margin-right:6px;opacity:0.7;"></i>
+            <?php endif; ?>
             <?= htmlspecialchars($t->nombre) ?>
         </button>
         <?php endforeach; ?>

@@ -84,12 +84,12 @@ $activas = array_filter($equipaciones, fn($e) => $e->isActivo());
                         <span style="color:#F5A800;font-weight:800;font-size:1.1rem;">
                             <?= htmlspecialchars($eq->getPrecioFormateado()) ?>
                         </span>
-                        <a href="https://wa.me/<?= WA_NUMBER ?>?text=<?= urlencode('Hola! Me interesa la camiseta: ' . ($eq->equipo_nombre ?? '') . ' ' . ($eq->tipo_nombre ?? '') . ' (' . $eq->getVersionLabel() . ')') ?>"
-                           target="_blank" rel="noopener"
-                           style="background:#F5A800;color:#1a1a1a;border-radius:8px;width:34px;height:34px;
-                                  display:flex;align-items:center;justify-content:center;text-decoration:none;"
-                           title="Pedir por WhatsApp">
-                            <i class="fab fa-whatsapp"></i>
+                        <a href="<?= APP_URL ?>Tienda/configurador/<?= (int) $eq->id ?>"
+                           style="background:#F5A800;color:#1a1a1a;border-radius:8px;padding:6px 14px;
+                                  font-size:0.8rem;font-weight:700;text-decoration:none;
+                                  display:inline-flex;align-items:center;gap:4px;"
+                           title="Configurar y pedir">
+                            <i class="fas fa-cog"></i>Configurar
                         </a>
                     </div>
                 </div>

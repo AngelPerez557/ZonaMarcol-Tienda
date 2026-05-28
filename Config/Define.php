@@ -43,6 +43,7 @@ define('EQUIPO_LOGO_UPLOAD_DIR',    IMG_BASE_DIR . 'Equipos'    . DS); // escudo
 define('LIGA_LOGO_UPLOAD_DIR',      IMG_BASE_DIR . 'Ligas'      . DS); // logos de ligas
 define('COMPETICION_PARCHE_DIR',    IMG_BASE_DIR . 'Competiciones' . DS); // parches
 define('EQUIPACION_IMAGE_UPLOAD_DIR', IMG_BASE_DIR . 'Equipaciones' . DS); // imágenes de camisas
+define('COMPROBANTE_CAMISETA_DIR',  IMG_BASE_DIR . 'Comprobantes' . DS); // comprobantes de pago de pedidos camiseta
 
 // ─────────────────────────────────────────────
 // 4. URL BASE — Se calcula automáticamente

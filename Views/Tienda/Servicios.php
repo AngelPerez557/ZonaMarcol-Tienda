@@ -70,12 +70,11 @@ $iconos = [
                     <span style="color:#F5A800;font-weight:800;font-size:1.25rem;">
                         <?= htmlspecialchars($s->getPrecioFormateado()) ?>
                     </span>
-                    <a href="https://wa.me/<?= WA_NUMBER ?>?text=<?= urlencode('Hola! Quiero solicitar el servicio: ' . $s->nombre) ?>"
-                       target="_blank" rel="noopener"
+                    <a href="<?= APP_URL ?>Tienda/solicitarServicio?servicio=<?= (int) $s->id ?>"
                        style="background:#F5A800;color:#1a1a1a;font-weight:700;font-size:0.85rem;
                               padding:8px 16px;border-radius:9px;text-decoration:none;
                               display:inline-flex;align-items:center;gap:6px;">
-                        <i class="fab fa-whatsapp"></i>Solicitar
+                        <i class="fas fa-paper-plane"></i>Solicitar
                     </a>
                 </div>
             </div>

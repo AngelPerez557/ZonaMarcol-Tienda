@@ -16,6 +16,8 @@ class TiendaController
     private TorneoModel           $torneoModel;
     private EquipoModel           $equipoModel;
     private CamisetaCatalogoModel $catalogoCamiseta;
+    private PedidoCamisetaModel    $pedidoCamisetaModel;
+    private SolicitudServicioModel $solicitudServicioModel;
 
 
     public function __construct()
@@ -34,6 +36,8 @@ class TiendaController
         $this->torneoModel      = new TorneoModel();
         $this->equipoModel      = new EquipoModel();
         $this->catalogoCamiseta = new CamisetaCatalogoModel();
+        $this->pedidoCamisetaModel    = new PedidoCamisetaModel();
+        $this->solicitudServicioModel = new SolicitudServicioModel();
     }
 
     // ─────────────────────────────────────────────
@@ -68,6 +72,195 @@ class TiendaController
         $this->render('Configurador.php', compact(
             'pageTitle', 'equipacion', 'tallas', 'competiciones', 'extras'
         ));
+    }
+
+    // ─────────────────────────────────────────────
+    // CONFIGURADOR SAVE — Crear pedido_camiseta + detalle + comprobante
+    // URL: /Tienda/configuradorSave (POST)
+    // Reemplaza el envío por WhatsApp: el pedido entra al sistema con
+    // estado Pendiente_pago, queda guardado el comprobante de transferencia
+    // y se dispara una notificación al admin.
+    // ─────────────────────────────────────────────
+    public function configuradorSave(): void
+    {
+        $this->requireCliente();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . APP_URL . 'Tienda/camisetas'); exit();
+        }
+        if (!isset($_POST['csrf_token']) ||
+            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+            header('Location: ' . APP_URL . 'Tienda/camisetas?error=csrf'); exit();
+        }
+
+        $equipacionId = (int) ($_POST['equipacion_id'] ?? 0);
+        $equipacion   = $this->equipacionModel->findById($equipacionId);
+        if (!$equipacion->Found || !$equipacion->isActivo()) {
+            header('Location: ' . APP_URL . 'Tienda/camisetas?error=equipacion'); exit();
+        }
+
+        // Talla — depende de la versión.
+        $tallaId  = (int) ($_POST['talla_id'] ?? 0);
+        if ($tallaId <= 0) {
+            header('Location: ' . APP_URL . 'Tienda/configurador/' . $equipacionId . '?error=talla');
+            exit();
+        }
+
+        // Extras opcionales — sanitizar.
+        $nombrePers   = htmlspecialchars(strip_tags(trim($_POST['nombre_personalizado'] ?? '')));
+        $numeroPers   = htmlspecialchars(strip_tags(trim($_POST['numero_personalizado'] ?? '')));
+        $competicionId = (int) ($_POST['competicion_id'] ?? 0);
+        $nota          = htmlspecialchars(strip_tags(trim($_POST['nota'] ?? '')));
+
+        // Precio: base + extras (cálculo server-side, no se confía en JS).
+        $precioBase   = (float) $equipacion->precio_base;
+        $precioExtras = 0.0;
+        if ($nombrePers !== '' && $numeroPers !== '') {
+            $precioExtras += $this->catalogoCamiseta->getPrecioExtra('nombre_y_numero');
+        } elseif ($nombrePers !== '') {
+            $precioExtras += $this->catalogoCamiseta->getPrecioExtra('nombre');
+        } elseif ($numeroPers !== '') {
+            $precioExtras += $this->catalogoCamiseta->getPrecioExtra('numero');
+        }
+        if ($competicionId > 0) {
+            $precioExtras += $this->catalogoCamiseta->getPrecioExtra('parche');
+        }
+        $subtotal = $precioBase + $precioExtras;
+
+        // ── Subir comprobante de transferencia (obligatorio) ──
+        if (empty($_FILES['comprobante']['name'])) {
+            header('Location: ' . APP_URL . 'Tienda/configurador/' . $equipacionId . '?error=comprobante');
+            exit();
+        }
+        $comprobantePath = ImageOptimizer::process(
+            $_FILES['comprobante'], COMPROBANTE_CAMISETA_DIR, 'comp_'
+        );
+        if ($comprobantePath === null) {
+            $_SESSION['alert'] = [
+                'icon'  => 'error',
+                'title' => 'Error con el comprobante',
+                'text'  => ImageOptimizer::$lastError ?? 'No se pudo procesar el comprobante.',
+            ];
+            header('Location: ' . APP_URL . 'Tienda/configurador/' . $equipacionId); exit();
+        }
+
+        // ── Crear el pedido_camiseta ──
+        $clienteId   = (int) $_SESSION['cliente']['id'];
+        $codigo      = $this->pedidoCamisetaModel->generarCodigo();
+        $pedidoId    = $this->pedidoCamisetaModel->insert([
+            'codigo'       => $codigo,
+            'cliente_id'   => $clienteId,
+            'temporada_id' => (int) $equipacion->temporada_id,
+            'subtotal'     => $subtotal,
+            'total'        => $subtotal,
+            'nota'         => $nota ?: null,
+        ]);
+        if ($pedidoId <= 0) {
+            $_SESSION['alert'] = ['icon'=>'error','title'=>'Error','text'=>'No se pudo crear el pedido.'];
+            header('Location: ' . APP_URL . 'Tienda/configurador/' . $equipacionId); exit();
+        }
+
+        // Talla — solo la columna que corresponde a la versión.
+        $detalle = [
+            'pedido_id'            => $pedidoId,
+            'equipacion_id'        => $equipacionId,
+            'talla_hombre_id'      => $equipacion->version === 'hombre'   ? $tallaId : null,
+            'talla_mujer_id'       => $equipacion->version === 'mujer'    ? $tallaId : null,
+            'talla_infantil_id'    => $equipacion->version === 'infantil' ? $tallaId : null,
+            'nombre_personalizado' => $nombrePers ?: null,
+            'numero_personalizado' => $numeroPers ?: null,
+            'competicion_id'       => $competicionId > 0 ? $competicionId : null,
+            'precio_unitario'      => $precioBase,
+            'precio_extras'        => $precioExtras,
+            'cantidad'             => 1,
+            'subtotal'             => $subtotal,
+        ];
+        $this->pedidoCamisetaModel->insertDetalle($detalle);
+
+        // Guardar la ruta del comprobante.
+        $this->pedidoCamisetaModel->updateComprobante($pedidoId, $comprobantePath);
+
+        // Notificación al admin (polling 30s la levanta).
+        $this->notifModel->insert(
+            'camiseta',
+            "Pedido nuevo: {$codigo}",
+            ($_SESSION['cliente']['nombre'] ?? 'Cliente') . " — L. " . number_format($subtotal, 2),
+            'Pedidos/index'
+        );
+
+        $_SESSION['alert'] = [
+            'icon'  => 'success',
+            'title' => '¡Pedido enviado!',
+            'text'  => "Tu pedido {$codigo} fue recibido. Te contactamos para confirmar el pago.",
+        ];
+        header('Location: ' . APP_URL . 'Tienda/camisetas');
+        exit();
+    }
+
+    // ─────────────────────────────────────────────
+    // SOLICITAR SERVICIO — form público para que el cliente envíe una
+    // solicitud de servicio técnico (se queda como `solicitudes_servicio`,
+    // pendiente hasta que recepción la convierta en orden real).
+    // URL: /Tienda/solicitarServicio
+    // ─────────────────────────────────────────────
+    public function solicitarServicio(): void
+    {
+        $this->requireCliente();
+        $pageTitle = 'Solicitar servicio técnico';
+        $servicios = $this->servicioModel->findActivos();
+        $servicioPre = (int) ($_GET['servicio'] ?? 0);
+        $this->render('SolicitudServicio.php', compact('pageTitle', 'servicios', 'servicioPre'));
+    }
+
+    public function guardarSolicitudServicio(): void
+    {
+        $this->requireCliente();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . APP_URL . 'Tienda/solicitarServicio'); exit();
+        }
+        if (!isset($_POST['csrf_token']) ||
+            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+            header('Location: ' . APP_URL . 'Tienda/solicitarServicio?error=csrf'); exit();
+        }
+
+        $equipo    = htmlspecialchars(strip_tags(trim($_POST['equipo_descripcion'] ?? '')));
+        $falla     = htmlspecialchars(strip_tags(trim($_POST['falla_reportada']    ?? '')));
+        $telefono  = htmlspecialchars(strip_tags(trim($_POST['telefono_contacto']  ?? '')));
+        $clienteId = (int) $_SESSION['cliente']['id'];
+
+        if (empty($equipo)) {
+            $_SESSION['alert'] = ['icon'=>'warning','title'=>'Campo requerido','text'=>'Describí el equipo.'];
+            header('Location: ' . APP_URL . 'Tienda/solicitarServicio'); exit();
+        }
+
+        $solicitudId = $this->solicitudServicioModel->insert([
+            'cliente_id'         => $clienteId,
+            'equipo_descripcion' => $equipo,
+            'falla_reportada'    => $falla   ?: null,
+            'telefono_contacto'  => $telefono ?: null,
+        ]);
+
+        if ($solicitudId <= 0) {
+            $_SESSION['alert'] = ['icon'=>'error','title'=>'Error','text'=>'No se pudo enviar la solicitud.'];
+            header('Location: ' . APP_URL . 'Tienda/solicitarServicio'); exit();
+        }
+
+        // Notificar al admin.
+        $this->notifModel->insert(
+            'servicio',
+            'Nueva solicitud de servicio',
+            ($_SESSION['cliente']['nombre'] ?? 'Cliente') . ' — ' . $equipo,
+            'Solicitudes/index'
+        );
+
+        $_SESSION['alert'] = [
+            'icon'  => 'success',
+            'title' => 'Solicitud enviada',
+            'text'  => 'Recibimos tu solicitud. Te contactamos para coordinar la recepción del equipo.',
+        ];
+        header('Location: ' . APP_URL . 'Tienda/index');
+        exit();
     }
 
     // ─────────────────────────────────────────────

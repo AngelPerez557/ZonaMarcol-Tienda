@@ -35,8 +35,8 @@ class AuthController
         }
 
         $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
-        if (!RateLimiter::check($ip)) {
-            $minutos = RateLimiter::minutosRestantes($ip);
+        if (!RateLimiter::check($ip, RateLimiter::LOGIN_ADMIN)) {
+            $minutos = RateLimiter::minutosRestantes($ip, RateLimiter::LOGIN_ADMIN);
             $_SESSION['login_error'] = "Por seguridad el acceso está bloqueado. Intenta en {$minutos} minuto(s).";
             header('Location: ' . APP_URL . 'Auth/index');
             exit();
@@ -60,7 +60,7 @@ class AuthController
 
         // Verifica que el usuario exista — Found = false si no existe
         if (!$user->Found) {
-            RateLimiter::registrarFallo($ip);
+            RateLimiter::registrarFallo($ip, RateLimiter::LOGIN_ADMIN);
             $_SESSION['login_error'] = 'Correo o contraseña incorrectos.';
             header('Location: ' . APP_URL . 'Auth/index');
             exit();
@@ -68,7 +68,7 @@ class AuthController
 
         // Verifica la contraseña contra el hash
         if (!password_verify($password, $user->password)) {
-            RateLimiter::registrarFallo($ip);
+            RateLimiter::registrarFallo($ip, RateLimiter::LOGIN_ADMIN);
             $_SESSION['login_error'] = 'Correo o contraseña incorrectos.';
             header('Location: ' . APP_URL . 'Auth/index');
             exit();
@@ -85,7 +85,7 @@ class AuthController
         $roleModel = new RoleModel();
         $permisos  = $roleModel->getPermissionsByRole($user->rol_id);
 
-        RateLimiter::limpiar($ip);
+        RateLimiter::limpiar($ip, RateLimiter::LOGIN_ADMIN);
 
         // Inicia la sesión
         Auth::login([
@@ -127,6 +127,14 @@ class AuthController
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
+            exit();
+        }
+
+        // CSRF — el JS de theme-switcher manda el token en el header
+        // X-CSRF-Token (no en form-data porque el body es JSON).
+        $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+        if (!Csrf::validate($token)) {
+            http_response_code(403);
             exit();
         }
 

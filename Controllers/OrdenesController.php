@@ -303,7 +303,7 @@ class OrdenesController
                 'Ordenes/detalle/' . $ordenId);
         }
 
-        $this->itemModel->delete($itemId);
+        $this->itemModel->deleteAndGetOrden($itemId);
         $this->ordenModel->recalcularTotal($ordenId);
 
         $_SESSION['alert'] = ['icon'=>'success','title'=>'Ítem eliminado','text'=>''];
@@ -347,6 +347,13 @@ class OrdenesController
                 'Orden ' . $orden->codigo,
                 'Estado: ' . $nuevo . ($motivo ? ' — ' . $motivo : ''),
                 'Ordenes/detalle/' . $ordenId);
+
+            // Notificación por email al cliente — fail-soft
+            $ordenActualizada = $this->ordenModel->findById($ordenId);
+            ClienteNotificador::notificarCambioEstadoOrden(
+                (int) $orden->cliente_id,
+                $ordenActualizada
+            );
             $_SESSION['alert'] = ['icon'=>'success','title'=>'Estado actualizado',
                 'text'=>'La orden ahora está en "' . $nuevo . '".'];
         } else {

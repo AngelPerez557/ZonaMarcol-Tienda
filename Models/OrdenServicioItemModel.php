@@ -120,8 +120,12 @@ class OrdenServicioItemModel extends BaseModel
         }
     }
 
-    /** Borra un ítem por id. Devuelve la orden_id afectada o 0. */
-    public function delete(int $id): int
+    /**
+     * Borra un ítem por id y devuelve la orden_id afectada.
+     * Nombre distinto a BaseModel::delete() porque cambia el contrato
+     * (devuelve int en vez de bool).
+     */
+    public function deleteAndGetOrden(int $id): int
     {
         try {
             // Capturamos el orden_id antes de borrar para que el controller

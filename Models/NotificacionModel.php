@@ -40,6 +40,43 @@ class NotificacionModel extends BaseModel
     // HELPERS — crear notificaciones específicas
     // ─────────────────────────────────────────────
 
+    /**
+     * Notificaciones con id > $sinceId — usado por el endpoint SSE para
+     * empujar solo lo nuevo, sin recargar todo el feed.
+     * PDO directo porque no hay SP dedicado para esto.
+     */
+    public function findRecent(int $sinceId, int $limit = 20): array
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                "SELECT id, tipo, titulo, mensaje, url, leida, created_at
+                   FROM notificaciones
+                  WHERE id > ?
+                  ORDER BY id ASC
+                  LIMIT ?"
+            );
+            $stmt->bindValue(1, $sinceId, \PDO::PARAM_INT);
+            $stmt->bindValue(2, $limit,   \PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (\PDOException $e) {
+            error_log('[NotificacionModel::findRecent] ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /** Máximo id actual — usado por SSE como cursor inicial. */
+    public function maxId(): int
+    {
+        try {
+            $stmt = $this->pdo->query("SELECT COALESCE(MAX(id), 0) AS m FROM notificaciones");
+            return (int) ($stmt->fetch()['m'] ?? 0);
+        } catch (\PDOException $e) {
+            error_log('[NotificacionModel::maxId] ' . $e->getMessage());
+            return 0;
+        }
+    }
+
     public function nuevoPedido(string $codigo, string $clienteNombre, float $total): void
     {
         $this->insert(

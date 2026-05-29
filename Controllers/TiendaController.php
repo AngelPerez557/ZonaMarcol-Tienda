@@ -18,6 +18,9 @@ class TiendaController
     private CamisetaCatalogoModel $catalogoCamiseta;
     private PedidoCamisetaModel    $pedidoCamisetaModel;
     private SolicitudServicioModel $solicitudServicioModel;
+    private OrdenServicioModel      $ordenServicioModel;     // Etapa 5
+    private OrdenServicioItemModel  $ordenItemModel;          // Etapa 5
+    private OrdenServicioPagoModel  $ordenPagoModel;          // Etapa 5
 
 
     public function __construct()
@@ -38,6 +41,9 @@ class TiendaController
         $this->catalogoCamiseta = new CamisetaCatalogoModel();
         $this->pedidoCamisetaModel    = new PedidoCamisetaModel();
         $this->solicitudServicioModel = new SolicitudServicioModel();
+        $this->ordenServicioModel = new OrdenServicioModel();
+        $this->ordenItemModel     = new OrdenServicioItemModel();
+        $this->ordenPagoModel     = new OrdenServicioPagoModel();
     }
 
     // ─────────────────────────────────────────────
@@ -92,6 +98,17 @@ class TiendaController
             !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             header('Location: ' . APP_URL . 'Tienda/camisetas?error=csrf'); exit();
         }
+
+        // Rate limit — un cliente legítimo no manda 8+ pedidos en 15min.
+        // Bloquea spam masivo + sube de archivo (comprobante).
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        if (!RateLimiter::check($ip, RateLimiter::PEDIDO_CAMISETA)) {
+            $min = RateLimiter::minutosRestantes($ip, RateLimiter::PEDIDO_CAMISETA);
+            $_SESSION['alert'] = ['icon'=>'warning','title'=>'Demasiados pedidos',
+                'text'=>"Esperá {$min} minuto(s) antes de enviar otro."];
+            header('Location: ' . APP_URL . 'Tienda/camisetas'); exit();
+        }
+        RateLimiter::registrarFallo($ip, RateLimiter::PEDIDO_CAMISETA);
 
         $equipacionId = (int) ($_POST['equipacion_id'] ?? 0);
         $equipacion   = $this->equipacionModel->findById($equipacionId);
@@ -223,6 +240,19 @@ class TiendaController
             !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             header('Location: ' . APP_URL . 'Tienda/solicitarServicio?error=csrf'); exit();
         }
+
+        // Rate limit — un cliente legítimo no manda 10+ solicitudes en
+        // 10 minutos. Más allá de eso es spam o abuso.
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        if (!RateLimiter::check($ip, RateLimiter::SOLICITUD_SERVICIO)) {
+            $min = RateLimiter::minutosRestantes($ip, RateLimiter::SOLICITUD_SERVICIO);
+            $_SESSION['alert'] = ['icon'=>'warning','title'=>'Demasiadas solicitudes',
+                'text'=>"Esperá {$min} minuto(s) antes de enviar otra."];
+            header('Location: ' . APP_URL . 'Tienda/solicitarServicio'); exit();
+        }
+        // Cuenta cada solicitud — no esperamos al "fallo" porque no hay
+        // condición de éxito vs error; cada envío suma al contador.
+        RateLimiter::registrarFallo($ip, RateLimiter::SOLICITUD_SERVICIO);
 
         $equipo    = htmlspecialchars(strip_tags(trim($_POST['equipo_descripcion'] ?? '')));
         $falla     = htmlspecialchars(strip_tags(trim($_POST['falla_reportada']    ?? '')));
@@ -631,6 +661,14 @@ class TiendaController
             header('Location: ' . APP_URL . 'Tienda/registro?error=csrf'); exit();
         }
 
+        // Rate limit — endpoint público que escribe en BD.
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        if (!RateLimiter::check($ip, RateLimiter::REGISTRO_TIENDA)) {
+            $min = RateLimiter::minutosRestantes($ip, RateLimiter::REGISTRO_TIENDA);
+            header('Location: ' . APP_URL . 'Tienda/registro?blocked=1&min=' . $min);
+            exit();
+        }
+
         $nombre    = htmlspecialchars(strip_tags(trim($_POST['nombre']   ?? '')));
         $email     = htmlspecialchars(strip_tags(trim($_POST['email']    ?? '')));
         $telefono  = htmlspecialchars(strip_tags(trim($_POST['telefono'] ?? '')));
@@ -644,6 +682,9 @@ class TiendaController
             header('Location: ' . APP_URL . 'Tienda/registro?error=password'); exit();
         }
         if ($this->clienteModel->emailExists($email)) {
+            // Cuenta como intento fallido — evita enumeración de emails
+            // existentes vía spam de registro.
+            RateLimiter::registrarFallo($ip, RateLimiter::REGISTRO_TIENDA);
             header('Location: ' . APP_URL . 'Tienda/registro?error=email'); exit();
         }
 
@@ -694,8 +735,8 @@ class TiendaController
         }
 
         $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
-        if (!RateLimiter::check($ip)) {
-            $minutos = RateLimiter::minutosRestantes($ip);
+        if (!RateLimiter::check($ip, RateLimiter::LOGIN_TIENDA)) {
+            $minutos = RateLimiter::minutosRestantes($ip, RateLimiter::LOGIN_TIENDA);
             header('Location: ' . APP_URL . 'Tienda/login?blocked=1&min=' . $minutos);
             exit();
         }
@@ -705,14 +746,14 @@ class TiendaController
         $cliente  = $this->clienteModel->findByEmail($email);
 
         if (!$cliente->Found || !password_verify($password, $cliente->password ?? '')) {
-            RateLimiter::registrarFallo($ip);
+            RateLimiter::registrarFallo($ip, RateLimiter::LOGIN_TIENDA);
             header('Location: ' . APP_URL . 'Tienda/login?error=credenciales'); exit();
         }
         if (!$cliente->isActivo()) {
             header('Location: ' . APP_URL . 'Tienda/login?error=inactivo'); exit();
         }
 
-        RateLimiter::limpiar($ip);
+        RateLimiter::limpiar($ip, RateLimiter::LOGIN_TIENDA);
         $_SESSION['cliente'] = [
             'id'       => $cliente->id,
             'nombre'   => $cliente->nombre,
@@ -1061,5 +1102,64 @@ public function cambiarPassword(): void
             (int) $_SESSION['cliente']['id']
         );
         $this->render('MisSolicitudes.php', compact('pageTitle', 'solicitudes'));
+    }
+
+    // ─────────────────────────────────────────────
+    // ETAPA 5 — Seguimiento de órdenes de servicio del cliente
+    // ─────────────────────────────────────────────
+
+    /**
+     * Lista las órdenes de servicio del cliente autenticado.
+     * URL: /Tienda/misOrdenesServicio
+     */
+    public function misOrdenesServicio(): void
+    {
+        $this->requireCliente();
+        $pageTitle = 'Mis Órdenes de Servicio';
+        $ordenes   = $this->ordenServicioModel->findByCliente(
+            (int) $_SESSION['cliente']['id']
+        );
+        $this->render('MisOrdenesServicio.php', compact('pageTitle', 'ordenes'));
+    }
+
+    /**
+     * Detalle de una orden del propio cliente.
+     * Doble guard: requireCliente + verificación de propiedad
+     * (cliente_id == sesión). Una orden ajena se trata como 404 lógico.
+     * Items: solo se muestran los APROBADOS por el cliente (el resto es
+     * borrador interno del técnico — no se filtra a la tienda).
+     * URL: /Tienda/verOrdenServicio/{id}
+     */
+    public function verOrdenServicio(string $id = ''): void
+    {
+        $this->requireCliente();
+
+        if (!is_numeric($id) || (int) $id <= 0) {
+            header('Location: ' . APP_URL . 'Tienda/misOrdenesServicio'); exit();
+        }
+
+        $orden = $this->ordenServicioModel->findById((int) $id);
+        $miId  = (int) $_SESSION['cliente']['id'];
+
+        if (!$orden->Found || (int) $orden->cliente_id !== $miId) {
+            $_SESSION['alert'] = [
+                'icon' => 'error', 'title' => 'No encontrada',
+                'text' => 'No encontramos esa orden en tu cuenta.',
+            ];
+            header('Location: ' . APP_URL . 'Tienda/misOrdenesServicio'); exit();
+        }
+
+        // Filtramos los items aprobados — son lo único que el cliente
+        // necesita ver. Los borradores del técnico no salen al storefront.
+        $itemsTodos = $this->ordenItemModel->findByOrden((int) $orden->id);
+        $items      = array_values(array_filter(
+            $itemsTodos,
+            fn($it) => $it->isAprobado()
+        ));
+        $pagos      = $this->ordenPagoModel->findByOrden((int) $orden->id);
+
+        $pageTitle = 'Orden ' . $orden->codigo;
+        $this->render('VerOrdenServicio.php',
+            compact('pageTitle', 'orden', 'items', 'pagos'));
     }
 }

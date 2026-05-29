@@ -32,20 +32,27 @@ $activas = array_filter($equipaciones, fn($e) => $e->isActivo());
         </div>
     <?php else: ?>
 
-    <!-- ─── FILTROS ──────────────────────────────── -->
-    <div class="mb-3 d-flex flex-wrap gap-2 justify-content-center">
-        <button type="button" class="cm-filtro cm-liga on" data-liga="">Todas las ligas</button>
+    <!-- ─── FILTROS DE LIGA — tiles grandes con logo destacado ─── -->
+    <div class="mb-4 cm-ligas-grid">
+        <button type="button" class="cm-tile-liga on" data-liga="" title="Todas las ligas">
+            <div class="cm-tile-logo">
+                <i class="fas fa-globe" style="color:#F5A800;font-size:2rem;"></i>
+            </div>
+            <div class="cm-tile-nombre">Todas</div>
+        </button>
         <?php foreach ($torneos as $t): ?>
-        <button type="button" class="cm-filtro cm-liga" data-liga="<?= htmlspecialchars($t->nombre) ?>">
-            <?php if (!empty($t->logo_path)): ?>
-            <img src="<?= htmlspecialchars($t->getLogoUrl()) ?>" alt=""
-                 style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:6px;
-                        background:#fff;border-radius:4px;padding:1px;"
-                 onerror="this.style.display='none';">
-            <?php else: ?>
-            <i class="fas fa-trophy" style="font-size:0.8rem;margin-right:6px;opacity:0.7;"></i>
-            <?php endif; ?>
-            <?= htmlspecialchars($t->nombre) ?>
+        <button type="button" class="cm-tile-liga" data-liga="<?= htmlspecialchars($t->nombre) ?>"
+                title="<?= htmlspecialchars($t->nombre) ?>">
+            <div class="cm-tile-logo">
+                <?php if (!empty($t->logo_path)): ?>
+                <img src="<?= htmlspecialchars($t->getLogoUrl()) ?>"
+                     alt="<?= htmlspecialchars($t->nombre) ?>"
+                     onerror="this.parentElement.innerHTML='<i class=\'fas fa-trophy\' style=\'color:#F5A800;font-size:2rem;\'></i>';">
+                <?php else: ?>
+                <i class="fas fa-trophy" style="color:#F5A800;font-size:2rem;"></i>
+                <?php endif; ?>
+            </div>
+            <div class="cm-tile-nombre"><?= htmlspecialchars($t->nombre) ?></div>
         </button>
         <?php endforeach; ?>
     </div>
@@ -111,12 +118,51 @@ $activas = array_filter($equipaciones, fn($e) => $e->isActivo());
 </div>
 
 <style>
+/* Filtros versión (Hombre/Mujer/Infantil) — pill chico */
 .cm-filtro{
     font-size:0.8rem;color:#8a8a8a;background:#222222;border:1px solid #333333;
     border-radius:18px;padding:6px 16px;cursor:pointer;transition:all 0.2s;white-space:nowrap;
 }
 .cm-filtro:hover{border-color:#F5A800;color:#e6e6e6;}
 .cm-filtro.on{background:#F5A800;color:#1a1a1a;border-color:#F5A800;font-weight:700;}
+
+/* Tiles de liga — grid responsive con logo grande */
+.cm-ligas-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(110px,1fr));
+    gap:12px;
+    max-width:980px;
+    margin:0 auto;
+}
+.cm-tile-liga{
+    background:#222222;border:1px solid #333333;border-radius:14px;
+    padding:14px 8px;cursor:pointer;transition:all 0.2s;
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    color:#8a8a8a;
+}
+.cm-tile-liga:hover{
+    border-color:#F5A800;color:#e6e6e6;transform:translateY(-2px);
+    box-shadow:0 4px 14px rgba(245,168,0,0.15);
+}
+.cm-tile-logo{
+    width:64px;height:64px;border-radius:12px;background:#fff;
+    display:flex;align-items:center;justify-content:center;padding:6px;
+}
+.cm-tile-logo img{max-width:100%;max-height:100%;object-fit:contain;}
+.cm-tile-nombre{
+    font-size:0.78rem;font-weight:700;letter-spacing:0.3px;text-align:center;
+    line-height:1.2;
+}
+.cm-tile-liga.on{
+    background:#F5A800;border-color:#F5A800;color:#1a1a1a;
+}
+.cm-tile-liga.on .cm-tile-logo{background:#1a1a1a;}
+.cm-tile-liga.on .cm-tile-logo i{color:#F5A800 !important;}
+@media (max-width:480px){
+    .cm-ligas-grid{grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;}
+    .cm-tile-logo{width:52px;height:52px;}
+    .cm-tile-nombre{font-size:0.7rem;}
+}
 </style>
 
 <script>
@@ -137,9 +183,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (vacio) vacio.style.display = visibles === 0 ? 'block' : 'none';
     }
 
-    document.querySelectorAll('.cm-liga').forEach(function (btn) {
+    document.querySelectorAll('.cm-tile-liga').forEach(function (btn) {
         btn.addEventListener('click', function () {
-            document.querySelectorAll('.cm-liga').forEach(b => b.classList.remove('on'));
+            document.querySelectorAll('.cm-tile-liga').forEach(b => b.classList.remove('on'));
             this.classList.add('on');
             ligaSel = this.dataset.liga;
             aplicar();

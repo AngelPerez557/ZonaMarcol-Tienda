@@ -135,6 +135,14 @@ class PedidosCamisetaController
                 'Anticipo registrado L. ' . number_format($monto, 2),
                 'PedidosCamiseta/detalle/' . $id
             );
+
+            // Email al cliente — fail-soft, no rompe el flujo
+            $pedidoActualizado = $this->pedidoModel->findById($id);
+            ClienteNotificador::notificarPagoConfirmadoCamiseta(
+                (int) $pedido->cliente_id,
+                $pedidoActualizado,
+                $monto
+            );
             $_SESSION['alert'] = [
                 'icon' => 'success', 'title' => 'Pago confirmado',
                 'text' => 'Anticipo registrado y pedido movido a Confirmado.',

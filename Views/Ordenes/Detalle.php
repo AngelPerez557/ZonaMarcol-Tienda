@@ -511,13 +511,25 @@ $csrfTok = htmlspecialchars($_SESSION['csrf_token'] ?? '');
                                 <i class="fas fa-times-circle me-1"></i>Cancelar orden
                             </button>
                             <?php else: ?>
+                                <?php
+                                    // Guard de Etapa 4: no permitir "Entregado" si hay saldo > 0.
+                                    // El bloqueo también se enforza en OrdenServicioModel::cambiarEstado.
+                                    $bloqueado = ($t === 'Entregado' && (float) $orden->saldo > 0.009);
+                                ?>
                             <form method="POST" action="<?= APP_URL ?>Ordenes/cambiarEstado" class="d-grid">
                                 <input type="hidden" name="csrf_token" value="<?= $csrfTok ?>">
                                 <input type="hidden" name="orden_id"   value="<?= (int) $orden->id ?>">
                                 <input type="hidden" name="estado"     value="<?= htmlspecialchars($t) ?>">
-                                <button type="submit" class="btn btn-success btn-sm">
+                                <button type="submit" class="btn btn-success btn-sm"
+                                        <?= $bloqueado ? 'disabled' : '' ?>
+                                        <?= $bloqueado ? 'title="Hay saldo pendiente — registrá el pago antes de entregar"' : '' ?>>
                                     <i class="fas fa-arrow-right me-1"></i>
                                     Mover a "<?= htmlspecialchars($t) ?>"
+                                    <?php if ($bloqueado): ?>
+                                    <small class="d-block mt-1" style="font-weight:normal;opacity:0.85;">
+                                        <i class="fas fa-lock me-1"></i>Saldo pendiente
+                                    </small>
+                                    <?php endif; ?>
                                 </button>
                             </form>
                             <?php endif; ?>
@@ -561,6 +573,102 @@ $csrfTok = htmlspecialchars($_SESSION['csrf_token'] ?? '');
     <input type="hidden" name="csrf_token" value="<?= $csrfTok ?>">
     <input type="hidden" name="item_id"    id="elimItemId" value="">
 </form>
+
+<!-- Modal registrar pago — Etapa 4 -->
+<?php if (Auth::can('servicio.entregar') && !$orden->estaCerrada() && (float) $orden->saldo > 0.009): ?>
+<div class="modal fade" id="modalPago" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="<?= APP_URL ?>Ordenes/registrarPago" class="modal-content">
+            <input type="hidden" name="csrf_token" value="<?= $csrfTok ?>">
+            <input type="hidden" name="orden_id"   value="<?= (int) $orden->id ?>">
+
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-cash-register me-2" style="color:#F5A800;"></i>
+                    Registrar pago — <?= htmlspecialchars($orden->codigo) ?>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <?php if (empty($cajaAbierta)): ?>
+                <div class="alert alert-warning small mb-3">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    No tenés caja abierta. El pago se registra igual, pero no
+                    quedará vinculado a una sesión de caja.
+                </div>
+                <?php else: ?>
+                <div class="alert alert-info small mb-3 py-2">
+                    <i class="fas fa-cash-register me-1"></i>
+                    Caja activa: #<?= (int) $cajaAbierta['id'] ?>
+                </div>
+                <?php endif; ?>
+
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label fw-semibold">
+                            Tipo <span class="text-danger">*</span>
+                        </label>
+                        <select name="tipo" class="form-select" required>
+                            <?php if ((float) $orden->total_pagado < 0.01): ?>
+                            <option value="anticipo">Anticipo</option>
+                            <?php endif; ?>
+                            <option value="abono">Abono</option>
+                            <option value="saldo">Saldo final</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-semibold">
+                            Método <span class="text-danger">*</span>
+                        </label>
+                        <select name="metodo" class="form-select" required>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Tarjeta">Tarjeta</option>
+                            <option value="Transferencia">Transferencia</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <label class="form-label fw-semibold">
+                        Monto a cobrar <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">L.</span>
+                        <input type="number" name="monto" id="pagoMonto" class="form-control"
+                               step="0.01" min="0.01"
+                               max="<?= number_format((float) $orden->saldo, 2, '.', '') ?>"
+                               value="<?= number_format((float) $orden->saldo, 2, '.', '') ?>"
+                               required>
+                    </div>
+                    <small class="text-muted">
+                        Saldo pendiente: L. <?= number_format((float) $orden->saldo, 2) ?>.
+                        El pago no puede excederlo.
+                    </small>
+                </div>
+
+                <div class="mt-3 d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary flex-fill"
+                            onclick="document.getElementById('pagoMonto').value=(<?= (float) $orden->saldo ?>/2).toFixed(2)">
+                        50% del saldo
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary flex-fill"
+                            onclick="document.getElementById('pagoMonto').value=<?= number_format((float) $orden->saldo, 2, '.', '') ?>">
+                        Saldo total
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-check me-1"></i>Registrar pago
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<?php endif; ?>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

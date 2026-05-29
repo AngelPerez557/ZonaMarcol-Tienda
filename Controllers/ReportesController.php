@@ -9,12 +9,14 @@
  */
 class ReportesController
 {
-    private ReporteModel $reporteModel;
+    private ReporteModel         $reporteModel;
+    private ReporteServicioModel $reporteServicioModel;
 
     public function __construct()
     {
         Auth::check();
-        $this->reporteModel = new ReporteModel();
+        $this->reporteModel         = new ReporteModel();
+        $this->reporteServicioModel = new ReporteServicioModel();
     }
 
     // ─────────────────────────────────────────────
@@ -67,5 +69,25 @@ class ReportesController
         $variantesStockBajo = $this->reporteModel->variantesStockBajo($limite);
 
         require_once VIEWS_PATH . 'Reportes' . DS . 'Inventario.php';
+    }
+
+    // ─────────────────────────────────────────────
+    // SERVICIO TÉCNICO
+    // URL: /Reportes/servicio
+    // ─────────────────────────────────────────────
+    public function servicio(): void
+    {
+        Auth::require('reportes.ver');
+
+        $pageTitle           = 'Reporte de Servicio Técnico';
+        $resumen             = $this->reporteServicioModel->resumen();
+        $ingresosPorMes      = $this->reporteServicioModel->ingresosPorMes(12);
+        $ordenesPorEstado    = $this->reporteServicioModel->ordenesPorEstado();
+        $garantiasVigentes   = $this->reporteServicioModel->garantiasVigentes(20);
+        $totalGarantias      = $this->reporteServicioModel->contarGarantiasVigentes();
+        $tecnicosProductivos = $this->reporteServicioModel->tecnicosProductivos(10);
+        $tiempoPromedio      = $this->reporteServicioModel->tiempoPromedio();
+
+        require_once VIEWS_PATH . 'Reportes' . DS . 'Servicio.php';
     }
 }

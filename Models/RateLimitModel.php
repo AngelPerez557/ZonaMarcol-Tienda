@@ -5,20 +5,24 @@
  *
  * F-08 — Antes el rate limit vivía en $_SESSION (un atacante borraba
  *        cookies y reseteaba el contador). Ahora persiste en la tabla
- *        rate_limits indexada por IP — sobrevive cierres de navegador.
+ *        rate_limits indexada por (IP, scope) — sobrevive cierres de
+ *        navegador y separa contadores por endpoint (login admin,
+ *        login tienda, registro, etc.).
+ *
+ * Los SPs ahora exigen scope. Para compatibilidad de llamadas viejas,
+ * el wrapper RateLimiter aplica 'global' como default cuando no se pasa.
  */
 class RateLimitModel extends BaseModel
 {
-    // No mapea a una tabla concreta para CRUD genérico — usa SPs específicos
     protected string $table = '';
 
     /**
-     * Obtiene estado del rate limit para una IP.
-     * Retorna array con: intentos, bloqueado, minutos_restantes
+     * Obtiene estado del rate limit para (IP, scope).
+     * Retorna array con: intentos, bloqueado, minutos_restantes.
      */
-    public function check(string $ip): array
+    public function check(string $ip, string $scope): array
     {
-        $row = $this->callSPSingle('sp_rate_limits_check', [$ip]);
+        $row = $this->callSPSingle('sp_rate_limits_check', [$ip, $scope]);
         if (!$row) {
             return ['intentos' => 0, 'bloqueado' => 0, 'minutos_restantes' => 0];
         }
@@ -32,18 +36,22 @@ class RateLimitModel extends BaseModel
     /**
      * Registra un intento fallido. Si supera el umbral, bloquea por N minutos.
      */
-    public function registrarFallo(string $ip, int $maxIntentos, int $bloqueoMin): void
-    {
+    public function registrarFallo(
+        string $ip,
+        string $scope,
+        int $maxIntentos,
+        int $bloqueoMin
+    ): void {
         $this->callSPExecute('sp_rate_limits_register_fallo', [
-            $ip, $maxIntentos, $bloqueoMin
+            $ip, $scope, $maxIntentos, $bloqueoMin
         ]);
     }
 
     /**
-     * Limpia el rate limit para una IP (al login exitoso).
+     * Limpia el rate limit para (IP, scope) — al success de la operación.
      */
-    public function limpiar(string $ip): void
+    public function limpiar(string $ip, string $scope): void
     {
-        $this->callSPExecute('sp_rate_limits_limpiar', [$ip]);
+        $this->callSPExecute('sp_rate_limits_limpiar', [$ip, $scope]);
     }
 }

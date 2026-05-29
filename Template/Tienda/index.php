@@ -22,6 +22,10 @@
     <meta name="apple-mobile-web-app-title" content="Zona Marcol">
     <link rel="apple-touch-icon" href="<?= APP_URL ?>Content/Demo/img/icon/icon-tienda-192.png">
 
+    <!-- APP_URL para JS + SW loader (PWA storefront) -->
+    <script>window.APP_URL = '<?= APP_URL ?>';</script>
+    <script src="<?= APP_URL ?>Content/Dist/js/sw-loader.js" defer></script>
+
     <style>
         /* Paleta TEMA OSCURO — este :root se carga DESPUÉS de tienda.css,
            así que redefine los tokens; debe quedar idéntico a tienda.css. */
@@ -453,6 +457,7 @@
                             <li><a class="dropdown-item" href="<?= APP_URL ?>Tienda/misPedidos"><i class="fas fa-box me-2"></i>Mis pedidos</a></li>
                             <li><a class="dropdown-item" href="<?= APP_URL ?>Tienda/misPedidosCamiseta"><i class="fas fa-tshirt me-2" style="color:#F5A800;"></i>Mis camisetas</a></li>
                             <li><a class="dropdown-item" href="<?= APP_URL ?>Tienda/misSolicitudes"><i class="fas fa-wrench me-2" style="color:#F5A800;"></i>Mis solicitudes</a></li>
+                            <li><a class="dropdown-item" href="<?= APP_URL ?>Tienda/misOrdenesServicio"><i class="fas fa-clipboard-check me-2" style="color:#F5A800;"></i>Mis órdenes de servicio</a></li>
                             <li><a class="dropdown-item" href="<?= APP_URL ?>Tienda/misFavoritos"><i class="fas fa-heart me-2" style="color:#F5A800;"></i>Mis favoritos</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="<?= APP_URL ?>Tienda/logout?csrf=<?= urlencode(Csrf::token()) ?>"><i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión</a></li>

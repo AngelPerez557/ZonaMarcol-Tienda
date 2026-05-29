@@ -101,7 +101,13 @@ class JRouter
     // ─────────────────────────────────────────────
 
     // Construye el nombre completo de la clase del controlador
-    // Ej: "Ejemplo" → "EjemploController"
+    // Ej: "Ejemplo" → "EjemploController", "pedidoscamiseta" → "PedidosCamisetaController"
+    //
+    // El matching contra la whitelist se hace case-insensitive para que el
+    // URL pueda venir en cualquier capitalización (todo minúsculas, mixed
+    // case, etc.) y aún así resolvamos el nombre canónico del archivo.
+    // El `strtolower(ucfirst())` anterior aplastaba camelCase compuesto
+    // y rompía controllers con dos palabras juntas (ej. PedidosCamiseta).
     private static function resolveController(string $name): string
     {
         if (empty($name)) {
@@ -112,14 +118,23 @@ class JRouter
         // antes de la whitelist (evita class_exists con paths raros).
         $name = preg_replace('/[^A-Za-z0-9_]/', '', $name);
 
-        // Capitaliza el primer carácter para respetar convención de clase
-        $name = ucfirst(strtolower($name));
+        // Asegurar sufijo Controller para la comparación.
+        $candidato = str_ends_with($name, 'Controller')
+            ? $name
+            : $name . 'Controller';
 
-        if (str_ends_with($name, 'Controller')) {
-            return $name;
+        // Match case-insensitive contra la whitelist real (los archivos
+        // bajo Controllers/). Devuelve el nombre canónico.
+        $lower = strtolower($candidato);
+        foreach (self::getControllerWhitelist() as $real) {
+            if (strtolower($real) === $lower) {
+                return $real;
+            }
         }
 
-        return $name . 'Controller';
+        // Si no hubo match, devolvemos el candidato Capitalized — la
+        // whitelist real lo rechazará en run() y caerá en notFound().
+        return ucfirst($candidato);
     }
 
     // ─────────────────────────────────────────────

@@ -40,6 +40,19 @@
           href="<?= APP_URL ?>Content/Demo/img/icons/icon-admin-192.png">
 
     <?php $darkMode = isset($_SESSION['dark_mode']) && $_SESSION['dark_mode'] === true; ?>
+
+    <!-- Token CSRF global para fetch/AJAX (leer con
+         document.querySelector('meta[name="csrf-token"]').content) -->
+    <meta name="csrf-token" content="<?= htmlspecialchars(Csrf::token()) ?>">
+
+    <!-- APP_URL para JS — necesario para el SW loader y endpoints AJAX -->
+    <script>window.APP_URL = '<?= APP_URL ?>';</script>
+
+    <!-- PWA — Service Worker loader (defer no bloquea render) -->
+    <script src="<?= APP_URL ?>Content/Dist/js/sw-loader.js" defer></script>
+
+    <!-- Notificaciones SSE — reemplaza el polling cada 30s -->
+    <script src="<?= APP_URL ?>Content/Dist/js/sse-notif.js" defer></script>
 </head>
 <body id="appBody"<?= $darkMode ? ' class="dark-mode"' : '' ?>>
     <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>

@@ -38,9 +38,18 @@
     // y el header.php no genere flash al recargar la página
     // ─────────────────────────────────────────────
     function syncSession(isDark) {
+        // CSRF — el token viene del <meta name="csrf-token"> que el
+        // template inyecta en cada request. Si no está, mandamos vacío
+        // y el server rechaza la mutación (es la política correcta).
+        var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        var csrfTok  = csrfMeta ? csrfMeta.content : '';
+
         fetch(APP_URL + 'Auth/darkMode', {
             method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type':  'application/json',
+                'X-CSRF-Token':  csrfTok
+            },
             body:    JSON.stringify({ dark_mode: isDark })
         }).catch(function () {
             // Si el fetch falla el modo visual ya fue aplicado

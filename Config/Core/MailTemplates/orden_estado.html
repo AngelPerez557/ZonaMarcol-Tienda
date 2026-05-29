@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>{{APP_NAME}} — {{titulo}}</title>
+</head>
+<body style="margin:0;padding:0;background:#f5f5f5;font-family:Arial,sans-serif;color:#333;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td align="center" style="padding:30px 10px;">
+      <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:10px;overflow:hidden;border:1px solid #ddd;">
+
+        <tr>
+          <td style="background:#1a1a1a;padding:20px 24px;color:#fff;">
+            <div style="font-size:14px;color:#F5A800;font-weight:bold;letter-spacing:1px;">{{APP_NAME}}</div>
+            <div style="font-size:20px;font-weight:bold;margin-top:4px;">{{titulo}}</div>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:24px;">
+            <p style="font-size:16px;margin:0 0 14px;">Hola <strong>{{cliente}}</strong>,</p>
+            <p style="font-size:14px;line-height:1.5;margin:0 0 14px;">{{mensaje}}</p>
+
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:14px 0;background:#fafafa;border:1px solid #eee;border-radius:6px;">
+              <tr>
+                <td style="padding:14px;">
+                  <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.5px;">Orden</div>
+                  <div style="font-size:18px;font-weight:bold;color:#F5A800;">{{codigo}}</div>
+                  <div style="font-size:13px;color:#666;margin-top:4px;">Estado actual: <strong>{{estado}}</strong></div>
+                  {{detalle_extra}}
+                </td>
+              </tr>
+            </table>
+
+            <p style="font-size:14px;margin:18px 0;">
+              <a href="{{APP_URL}}Tienda/misOrdenesServicio"
+                 style="display:inline-block;background:#F5A800;color:#1a1a1a;text-decoration:none;
+                        padding:12px 22px;border-radius:8px;font-weight:bold;">
+                Ver mis órdenes
+              </a>
+            </p>
+
+            <p style="font-size:12px;color:#888;margin:24px 0 0;">
+              Recibís este correo porque tenés una orden de servicio activa en {{APP_NAME}}.
+              Si no fuiste vos, ignorá este mensaje.
+            </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="background:#f5f5f5;padding:14px 24px;text-align:center;font-size:11px;color:#999;">
+            © {{APP_NAME}} — Mensaje automático, no respondas a este correo.
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

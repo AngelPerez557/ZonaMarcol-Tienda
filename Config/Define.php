@@ -82,6 +82,17 @@ define('APP_LOCALE',  'es_HN');
 define('WA_NUMBER', getenv('WA_NUMBER') ?: '50497141775');
 
 // ─────────────────────────────────────────────
+// 7-B. EMAIL — From + nombre que aparece en notificaciones al cliente
+// MAIL_ENABLED en false desactiva el envío sin tocar el código de
+// negocio (queda en error_log con prefijo [Mailer:disabled]).
+// MAIL_FROM debe coincidir con un dominio del servidor o un SPF/DKIM
+// configurado, sino los emails caen a spam.
+// ─────────────────────────────────────────────
+define('MAIL_ENABLED',   getenv('MAIL_ENABLED') === '0' ? false : true);
+define('MAIL_FROM',      getenv('MAIL_FROM')      ?: 'no-reply@zonamarcol.com');
+define('MAIL_FROM_NAME', getenv('MAIL_FROM_NAME') ?: 'Zona Marcol');
+
+// ─────────────────────────────────────────────
 // 8. CONFIGURACIÓN DE SESIÓN
 // SESSION_NAME único por sistema — evita conflictos
 // entre proyectos en el mismo servidor

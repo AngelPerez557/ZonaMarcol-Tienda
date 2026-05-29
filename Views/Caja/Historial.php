@@ -55,7 +55,17 @@
                                 <?= $s['total_ventas'] !== null ? 'L. '.number_format((float)$s['total_ventas'],2) : '—' ?>
                             </td>
                             <td class="text-end fw-bold">
-                                <?php if ($s['diferencia'] !== null): $dif=(float)$s['diferencia']; ?>
+                                <?php
+                                    // `diferencia` no viene del SP — la calculamos:
+                                    // diferencia = monto_cierre - monto_sistema.
+                                    // Si la caja sigue abierta, no hay cierre → null.
+                                    $diff = null;
+                                    if (isset($s['monto_cierre']) && $s['monto_cierre'] !== null
+                                        && isset($s['monto_sistema']) && $s['monto_sistema'] !== null) {
+                                        $diff = (float) $s['monto_cierre'] - (float) $s['monto_sistema'];
+                                    }
+                                ?>
+                                <?php if ($diff !== null): $dif = $diff; ?>
                                 <span class="<?= abs($dif)<0.01?'text-success':($dif>0?'text-info':'text-danger') ?>">
                                     <?= $dif>=0?'+':'' ?>L. <?= number_format($dif,2) ?>
                                 </span>

@@ -146,13 +146,20 @@ class SolicitudesController
         // Vincula la solicitud con la orden recién creada.
         $this->solicitudModel->marcarAtendida($solicitudId, $ordenId);
 
-        // Notifica al cliente vía bitácora interna (placeholder hasta que
-        // haya canal con el cliente — por ahora queda como notif admin).
+        // Notifica al cliente vía bitácora interna.
         $this->notifModel->insert(
             'servicio',
             'Solicitud atendida',
             'Solicitud #' . $solicitudId . ' convertida en orden.',
             'Ordenes/detalle/' . $ordenId
+        );
+
+        // Email al cliente — fail-soft
+        $ordenCreada = $this->ordenModel->findById($ordenId);
+        ClienteNotificador::notificarSolicitudAtendida(
+            (int) $solicitud->cliente_id,
+            $solicitud,
+            $ordenCreada->codigo ?? ('OS-' . $ordenId)
         );
 
         $_SESSION['alert'] = [
@@ -199,6 +206,16 @@ class SolicitudesController
         }
 
         $ok = $this->solicitudModel->rechazar($id, $motivo);
+
+        if ($ok) {
+            // Email al cliente — fail-soft. Usamos la solicitud refrescada
+            // para que el motivo de rechazo viaje al template.
+            $solicitudActualizada = $this->solicitudModel->findById($id);
+            ClienteNotificador::notificarSolicitudRechazada(
+                (int) $solicitud->cliente_id,
+                $solicitudActualizada
+            );
+        }
 
         $_SESSION['alert'] = [
             'icon'  => $ok ? 'success' : 'error',

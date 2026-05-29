@@ -118,7 +118,7 @@
                             <tr class="inv-row" data-nombre="<?= strtolower(htmlspecialchars($p['nombre'])) ?>">
                                 <td class="ps-3">
                                     <div class="fw-semibold"><?= htmlspecialchars($p['nombre']) ?></div>
-                                    <small class="text-muted"><?= htmlspecialchars($p['categoria_nombre']) ?></small>
+                                    <small class="text-muted"><?= htmlspecialchars($p['categoria_nombre'] ?? 'Sin categoría') ?></small>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge <?= (int)$p['stock'] === 0 ? 'bg-danger' : 'bg-warning text-dark' ?>">

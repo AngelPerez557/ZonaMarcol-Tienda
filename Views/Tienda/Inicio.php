@@ -27,11 +27,31 @@ if (!function_exists('calcDesc')) {
 
 <!-- ─── SLIDER DE BANNERS ─────────────────────── -->
 <?php if (!empty($banners)): ?>
+<style>
+    /* Banners — regla global que respeta cualquier banner futuro.
+       En desktop: cover (rellena todo, recorta si hace falta).
+       En mobile: contain (se ve la imagen completa con bandas oscuras
+       arriba/abajo). Sin doble versión por banner. */
+    .banner-slide {
+        height: clamp(220px, 45vw, 420px);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    @media (max-width: 768px) {
+        .banner-slide {
+            background-size: contain;
+            background-color: #1a1a1a;
+            height: auto;
+            aspect-ratio: 16 / 5;   /* coincide con 1920x600 del banner */
+        }
+    }
+</style>
 <div id="carouselBanners" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner">
         <?php foreach ($banners as $i => $b): ?>
         <div class="carousel-item <?= $i === 0 ? 'active' : '' ?>">
-            <div style="height:clamp(220px,45vw,420px);background-image:url('<?= APP_URL ?>Content/Demo/img/Banners/<?= htmlspecialchars($b['imagen_url']) ?>');background-size:cover;background-position:center;">
+            <div class="banner-slide" style="background-image:url('<?= APP_URL ?>Content/Demo/img/Banners/<?= htmlspecialchars($b['imagen_url']) ?>');">
                 <?php if ($b['titulo']): ?>
                 <div class="carousel-caption d-none d-md-block">
                     <h2 class="fw-bold"><?= htmlspecialchars($b['titulo']) ?></h2>

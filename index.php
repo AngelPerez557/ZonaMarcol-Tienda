@@ -7,6 +7,20 @@
  */
 
 // ─────────────────────────────────────────────
+// 0. OUTPUT BUFFERING GLOBAL
+//
+// Template/index.php cierra su propio buffer con ob_get_clean() y luego
+// hace `echo $body[0]`. Sin un buffer global por encima, ese echo emite
+// HTML al browser y rompe cualquier `header()` posterior (logout,
+// redirects, etc.) con "Cannot modify header information".
+//
+// ob_start() acá envuelve toda la request — el HTML queda en buffer
+// hasta el fin del script, y los `header()` funcionan en cualquier punto.
+// PHP hace ob_end_flush() automático al terminar.
+// ─────────────────────────────────────────────
+ob_start();
+
+// ─────────────────────────────────────────────
 // 1. HEADERS DE SEGURIDAD HTTP
 //
 // F-10: Content-Security-Policy — segunda línea de defensa contra XSS

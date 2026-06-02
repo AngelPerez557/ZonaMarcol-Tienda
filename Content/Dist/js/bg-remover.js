@@ -30,27 +30,45 @@
     let removeFn = null;          // función resuelta una vez cargada la lib
     let cargandoLib = null;       // promesa de carga lazy
 
+    // CDN base para los assets del modelo (ONNX + WASM). La librería los
+    // busca relativo a su `publicPath`. Sin esto carga 404.
+    const IMGLY_VERSION = '1.4.5';
+    const IMGLY_BASE    = 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@'
+                        + IMGLY_VERSION + '/dist/';
+
     /**
      * Carga la librería @imgly/background-removal en demanda.
-     * Devuelve una promesa que resuelve a la función removeBackground.
+     * Usa esm.sh que resuelve dependencias internas del paquete (jsdelivr
+     * ESM "crudo" no las bundlea y falla con "Failed to fetch dynamically
+     * imported module"). Fallback a unpkg si esm.sh está caído.
      */
     function cargarLib() {
         if (removeFn) return Promise.resolve(removeFn);
         if (cargandoLib) return cargandoLib;
 
-        cargandoLib = new Promise((resolve, reject) => {
-            // ESM dinámico — el bundle UMD es enorme, conviene el module.
-            import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/browser.mjs')
-                .then((mod) => {
-                    removeFn = mod.removeBackground || mod.default;
-                    if (typeof removeFn !== 'function') {
-                        reject(new Error('removeBackground no encontrada en el módulo.'));
-                        return;
+        const fuentes = [
+            'https://esm.sh/@imgly/background-removal@' + IMGLY_VERSION,
+            'https://esm.run/@imgly/background-removal@' + IMGLY_VERSION,
+        ];
+
+        cargandoLib = (async () => {
+            let ultimoError = null;
+            for (const url of fuentes) {
+                try {
+                    const mod = await import(url);
+                    const fn = mod.removeBackground || mod.default;
+                    if (typeof fn === 'function') {
+                        removeFn = fn;
+                        return fn;
                     }
-                    resolve(removeFn);
-                })
-                .catch(reject);
-        });
+                } catch (err) {
+                    ultimoError = err;
+                    console.warn('[bg-remover] fallo carga desde', url, err);
+                }
+            }
+            throw ultimoError || new Error('No se pudo cargar la librería.');
+        })();
+
         return cargandoLib;
     }
 
@@ -93,7 +111,23 @@
         try {
             const remove = await cargarLib();
             // El modelo devuelve un Blob PNG con alpha.
-            const blob = await remove(file);
+            // publicPath le dice a la lib dónde buscar el modelo ONNX +
+            // los binarios WASM. Sin esto, los busca relativo a la página
+            // actual y da 404.
+            const blob = await remove(file, {
+                publicPath: IMGLY_BASE,
+                debug: false,
+                progress: (key, current, total) => {
+                    if (key && key.indexOf('fetch') === 0) {
+                        const pct = total ? Math.round((current / total) * 100) : 0;
+                        statusEl.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>'
+                            + 'Descargando modelo... ' + pct + '%';
+                    } else if (key === 'compute:inference') {
+                        statusEl.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>'
+                            + 'Procesando imagen...';
+                    }
+                },
+            });
             const nuevoFile = new File(
                 [blob],
                 nombreSinFondo(file.name),

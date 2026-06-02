@@ -22,6 +22,14 @@ const SHELL_ASSETS = [
     './Content/Dist/css/tienda.css',
 ];
 
+// El sw-loader.js manda este mensaje cuando detecta una versión nueva
+// para activarla sin esperar a que el usuario cierre todos los tabs.
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
+
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {

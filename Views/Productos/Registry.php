@@ -516,5 +516,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-<!-- Componente reusable de remoción de fondo (cliente-side WASM) -->
-<script src="<?= APP_URL ?>Content/Dist/js/bg-remover.js" defer></script>
+<!-- Componente reusable de remoción de fondo (cliente-side WASM).
+     Versionado con query param para invalidar cache del browser y del SW
+     cuando se actualice el archivo. Bumpear el ?v= en cada release. -->
+<script src="<?= APP_URL ?>Content/Dist/js/bg-remover.js?v=3" defer></script>

@@ -38,17 +38,22 @@
 
     /**
      * Carga la librería @imgly/background-removal en demanda.
-     * Usa esm.sh que resuelve dependencias internas del paquete (jsdelivr
-     * ESM "crudo" no las bundlea y falla con "Failed to fetch dynamically
-     * imported module"). Fallback a unpkg si esm.sh está caído.
+     *
+     * Usa el endpoint `/+esm` de jsdelivr — el servidor tiene CSP que
+     * SOLO permite cdn.jsdelivr.net y cdnjs.cloudflare.com. El sufijo
+     * `+esm` le pide a jsdelivr que bundlee las dependencias internas
+     * del paquete (sin él, jsdelivr sirve el ESM "crudo" y rompe con
+     * "Failed to fetch dynamically imported module").
      */
     function cargarLib() {
         if (removeFn) return Promise.resolve(removeFn);
         if (cargandoLib) return cargandoLib;
 
         const fuentes = [
-            'https://esm.sh/@imgly/background-removal@' + IMGLY_VERSION,
-            'https://esm.run/@imgly/background-removal@' + IMGLY_VERSION,
+            // Bundled ESM — resuelve dependencias.
+            'https://cdn.jsdelivr.net/npm/@imgly/background-removal@' + IMGLY_VERSION + '/+esm',
+            // Fallback: el browser bundle directo (puede romper por deps).
+            'https://cdn.jsdelivr.net/npm/@imgly/background-removal@' + IMGLY_VERSION + '/dist/browser.mjs',
         ];
 
         cargandoLib = (async () => {

@@ -193,6 +193,7 @@
                             <div class="d-flex gap-3 align-items-start">
                                 <div id="previewContainer">
                                     <img id="previewImagen"
+                                         data-bg-preview-for="imagen"
                                          src="<?= $producto->getImageUrl() ?>"
                                          alt="Preview"
                                          style="width:100px; height:100px; object-fit:contain; border-radius:8px; border:2px solid #dee2e6; background:#FFFBF2;">
@@ -202,6 +203,7 @@
                                            class="form-control"
                                            id="imagen"
                                            name="imagen"
+                                           data-bg-remover
                                            accept="image/jpeg,image/png,image/webp">
                                     <small class="text-muted">
                                         JPG, PNG o WEBP. Máximo 2MB.
@@ -513,3 +515,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 </script>
+
+<!-- Componente reusable de remoción de fondo (cliente-side WASM) -->
+<script src="<?= APP_URL ?>Content/Dist/js/bg-remover.js" defer></script>

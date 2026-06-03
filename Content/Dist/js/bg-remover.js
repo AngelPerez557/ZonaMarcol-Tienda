@@ -50,10 +50,10 @@
         if (cargandoLib) return cargandoLib;
 
         const fuentes = [
-            // Bundled ESM — resuelve dependencias.
-            'https://cdn.jsdelivr.net/npm/@imgly/background-removal@' + IMGLY_VERSION + '/+esm',
-            // Fallback: el browser bundle directo (puede romper por deps).
-            'https://cdn.jsdelivr.net/npm/@imgly/background-removal@' + IMGLY_VERSION + '/dist/browser.mjs',
+            // Preferir unpkg with ?module — reescribe imports a URLs ESM
+            'https://unpkg.com/@imgly/background-removal@' + IMGLY_VERSION + '/dist/index.mjs?module',
+            // Fallback: cdn.jsdelivr ESM build (puede requerir resolver deps manualmente).
+            'https://cdn.jsdelivr.net/npm/@imgly/background-removal@' + IMGLY_VERSION + '/dist/index.mjs',
         ];
 
         cargandoLib = (async () => {

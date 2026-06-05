@@ -30,11 +30,24 @@
     let removeFn = null;          // función resuelta una vez cargada la lib
     let cargandoLib = null;       // promesa de carga lazy
 
-    // CDN base para los assets del modelo (ONNX + WASM). La librería los
-    // busca relativo a su `publicPath`. Sin esto carga 404.
+    // Versión y base para los assets del modelo (ONNX + WASM).
+    // La librería los busca relativo a su `publicPath`. Sin esto carga 404.
     const IMGLY_VERSION = '1.4.5';
-    const IMGLY_BASE    = 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@'
-                        + IMGLY_VERSION + '/dist/';
+    // Por defecto apuntamos al CDN, pero intentaremos primero cargar
+    // una copia local colocada en ../vendor/@imgly/background-removal@<vers>/dist/
+    let IMGLY_BASE = 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@'
+                    + IMGLY_VERSION + '/dist/';
+
+    // Helper: calcular la URL base del script actual para resolver rutas
+    // relativas (permitirá usar ../vendor/... desde la ubicación de js/bg-remover.js).
+    function getScriptBase() {
+        let src = (document.currentScript && document.currentScript.src) || null;
+        if (!src) {
+            const s = document.querySelector('script[src$="bg-remover.js"]');
+            src = s ? s.src : window.location.origin + '/Content/Dist/js/bg-remover.js';
+        }
+        return src.replace(/\/[^\/]*$/, '/');
+    }
 
     /**
      * Carga la librería @imgly/background-removal en demanda.
@@ -49,11 +62,17 @@
         if (removeFn) return Promise.resolve(removeFn);
         if (cargandoLib) return cargandoLib;
 
+        const scriptBase = getScriptBase();
+        const localModuleUrl = new URL('../vendor/@imgly/background-removal@' + IMGLY_VERSION + '/dist/index.mjs', scriptBase).href;
+        const localDistBase = new URL('../vendor/@imgly/background-removal@' + IMGLY_VERSION + '/dist/', scriptBase).href;
+
         const fuentes = [
-            // Bundled ESM — resuelve dependencias.
-            'https://cdn.jsdelivr.net/npm/@imgly/background-removal@' + IMGLY_VERSION + '/+esm',
-            // Fallback: el browser bundle directo (puede romper por deps).
-            'https://cdn.jsdelivr.net/npm/@imgly/background-removal@' + IMGLY_VERSION + '/dist/browser.mjs',
+            // Intentar primero copia local (colocar release en Content/Dist/vendor/...)
+            localModuleUrl,
+            // Preferir unpkg with ?module — reescribe imports a URLs ESM
+            'https://unpkg.com/@imgly/background-removal@' + IMGLY_VERSION + '/dist/index.mjs?module',
+            // Fallback: cdn.jsdelivr ESM build (puede requerir resolver deps manualmente).
+            'https://cdn.jsdelivr.net/npm/@imgly/background-removal@' + IMGLY_VERSION + '/dist/index.mjs',
         ];
 
         cargandoLib = (async () => {
@@ -63,6 +82,10 @@
                     const mod = await import(url);
                     const fn = mod.removeBackground || mod.default;
                     if (typeof fn === 'function') {
+                        // Si cargamos la copia local, ajustamos el publicPath
+                        if (url === localModuleUrl) {
+                            IMGLY_BASE = localDistBase;
+                        }
                         removeFn = fn;
                         return fn;
                     }

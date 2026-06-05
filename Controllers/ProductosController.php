@@ -103,6 +103,9 @@ class ProductosController
         $precioBase     = !empty($_POST['precio_base']) ? (float) $_POST['precio_base'] : null;
         $tieneVariantes = isset($_POST['tiene_variantes']) ? 1 : 0;
         $codigoBarras = trim($_POST['codigo_barras'] ?? '') ?: null;
+        // [diag] log temporal — quitar cuando se confirme que el campo se persiste
+        error_log('[ProductosController::save] codigo_barras POST=' . var_export($_POST['codigo_barras'] ?? 'NULL', true)
+                  . ' → guardado=' . var_export($codigoBarras, true));
         $stock          = $tieneVariantes ? 0 : (int) ($_POST['stock'] ?? 0);
         $visibleTienda = isset($_POST['visible_tienda']) ? 1 : 0;
 
@@ -267,6 +270,9 @@ class ProductosController
         $precio       = !empty($_POST['precio']) ? (float) $_POST['precio'] : null;
         $stock        = (int) ($_POST['stock']         ?? 0);
         $codigoBarras = trim($_POST['codigo_barras']   ?? '') ?: null;
+        // [diag] log temporal — quitar cuando se confirme que el campo se persiste
+        error_log('[ProductosController::saveVariante] codigo_barras POST=' . var_export($_POST['codigo_barras'] ?? 'NULL', true)
+                  . ' → guardado=' . var_export($codigoBarras, true));
         $orden        = (int) ($_POST['orden']         ?? 0);
 
         $imageUrl = null;

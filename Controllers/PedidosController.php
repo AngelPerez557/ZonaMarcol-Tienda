@@ -15,6 +15,19 @@ class PedidosController
         Auth::require('pedidos.ver');
         $pageTitle = 'Todos los Pedidos';
         $pedidos   = $this->pedidoModel->findAll();
+
+        // KPIs del día — calculados desde el array en memoria para evitar
+        // otro round-trip a la BD. Pedidos del día = created_at de hoy.
+        $hoy      = date('Y-m-d');
+        $countHoy = 0;
+        $totalHoy = 0.0;
+        foreach ($pedidos as $p) {
+            if ($p->created_at && substr($p->created_at, 0, 10) === $hoy) {
+                $countHoy++;
+                $totalHoy += (float) $p->total;
+            }
+        }
+
         require_once VIEWS_PATH . 'Pedidos' . DS . 'index.php';
     }
 
